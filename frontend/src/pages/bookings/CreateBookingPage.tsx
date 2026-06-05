@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import { venueService } from '@/services/venue.service';
@@ -9,7 +9,9 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Spinner } from '@/components/ui/Spinner';
 import { VenueCalendar } from '@/components/venues/VenueCalendar';
+import { PaymentModal } from '@/components/bookings/PaymentModal';
 import { formatPrice } from '@/utils/format';
+import { calculateBookingPrice } from '@/utils/bookingPrice';
 import type { Car, VenueDetail } from '@/types';
 
 export function CreateBookingPage() {
@@ -18,12 +20,13 @@ export function CreateBookingPage() {
   const [venue, setVenue] = useState<VenueDetail | null>(null);
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
   const [eventDate, setEventDate] = useState('');
-  const [guestCount, setGuestCount] = useState('');
+  const [tableCount, setTableCount] = useState('');
   const [selectedSinger, setSelectedSinger] = useState('');
   const [selectedCar, setSelectedCar] = useState('');
+  const [selectedMenu, setSelectedMenu] = useState('');
   const [includeKarnay, setIncludeKarnay] = useState(false);
+  const [showPayment, setShowPayment] = useState(false);
 
   useEffect(() => {
     if (!venueId) return;
@@ -43,49 +46,83 @@ export function CreateBookingPage() {
       .finally(() => setLoading(false));
   }, [venueId, navigate]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!venueId || !eventDate) {
-      toast.error('Sanani tanlang');
-      return;
+  const priceBreakdown = useMemo(() => {
+    if (!venue || !tableCount) {
+      return { baseTotal: 0, extrasTotal: 0, totalPrice: 0, advancePaid: 0, extras: [] as Array<{ label: string; price: number }> };
     }
-    const extras: Array<{ type: 'singer' | 'karnay' | 'car'; id: number }> = [];
+
+    const extras: Array<{ label: string; price: number }> = [];
+    const singer = venue.singers?.find((s) => String(s.id) === selectedSinger);
+    if (singer) extras.push({ label: singer.name, price: Number(singer.price) });
+
+    const car = cars.find((c) => String(c.id) === selectedCar);
+    if (car) extras.push({ label: car.brand, price: Number(car.price) });
+
+    const menu = venue.menu_items?.find((m) => String(m.id) === selectedMenu);
+    if (menu) extras.push({ label: menu.name, price: Number(menu.price) });
+
+    if (includeKarnay && venue.karnay_surnay?.available) {
+      extras.push({ label: 'Karnay-surnay', price: Number(venue.karnay_surnay.price) });
+    }
+
+    const calc = calculateBookingPrice(
+      venue.price,
+      Number(tableCount),
+      extras.map((e) => ({ type: 'singer', price: e.price }))
+    );
+
+    return { ...calc, extras };
+  }, [venue, tableCount, selectedSinger, selectedCar, selectedMenu, includeKarnay, cars]);
+
+  const buildExtrasPayload = () => {
+    const extras: Array<{ type: 'singer' | 'karnay' | 'car' | 'menu'; id: number }> = [];
     if (selectedSinger) extras.push({ type: 'singer', id: Number(selectedSinger) });
     if (includeKarnay && venue?.karnay_surnay) {
       extras.push({ type: 'karnay', id: venue.karnay_surnay.id });
     }
     if (selectedCar) extras.push({ type: 'car', id: Number(selectedCar) });
+    if (selectedMenu) extras.push({ type: 'menu', id: Number(selectedMenu) });
+    return extras;
+  };
 
-    setSaving(true);
-    try {
-      const { data } = await bookingService.create({
-        venueId: Number(venueId),
-        eventDate,
-        guestCount: Number(guestCount),
-        extras,
-      });
-      toast.success(data.message);
-      navigate(`/bookings/${data.booking.id}`);
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : 'Xatolik');
-    } finally {
-      setSaving(false);
+  const handleContinue = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!venueId || !eventDate || !tableCount) {
+      toast.error("Barcha majburiy maydonlarni to'ldiring");
+      return;
     }
+    setShowPayment(true);
+  };
+
+  const handlePayment = async () => {
+    if (!venueId || !eventDate) return;
+
+    await new Promise((resolve) => setTimeout(resolve, 1200));
+
+    const { data } = await bookingService.create({
+      venueId: Number(venueId),
+      eventDate,
+      guestCount: Number(tableCount),
+      extras: buildExtrasPayload(),
+    });
+
+    setShowPayment(false);
+    toast.success(data.message || 'Booking completed successfully');
+    navigate(`/bookings/${data.booking.id}`);
   };
 
   if (loading) return <Spinner />;
   if (!venue) return null;
 
-  const estimatedBase = guestCount
-    ? Number(venue.price) * Number(guestCount)
-    : 0;
+  const selectClass =
+    'w-full rounded-xl border border-gold-400/20 bg-white px-4 py-2.5 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-gold-400/40';
 
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader title="Bron qilish" subtitle={venue.name} />
       <div className="grid gap-8 lg:grid-cols-2">
         <div>
-          <p className="mb-3 text-sm font-medium text-slate-300">Bo&apos;sh kunni tanlang</p>
+          <p className="mb-3 text-sm font-medium text-stone-600">Bo&apos;sh kunni tanlang</p>
           <VenueCalendar
             venueId={venue.id}
             mode="select"
@@ -93,12 +130,12 @@ export function CreateBookingPage() {
             onSelectDate={setEventDate}
           />
           {eventDate && (
-            <p className="mt-2 text-sm text-brand-400">
-              Tanlangan: {new Date(eventDate).toLocaleDateString('uz-UZ')}
+            <p className="mt-2 text-sm text-gold-600">
+              Tanlangan: {new Date(`${eventDate}T00:00:00`).toLocaleDateString('uz-UZ')}
             </p>
           )}
         </div>
-        <form onSubmit={handleSubmit} className="glass space-y-4 rounded-2xl p-6">
+        <form onSubmit={handleContinue} className="glass space-y-4 rounded-2xl p-6">
           <Input
             label="Tadbir sanasi"
             type="date"
@@ -108,24 +145,24 @@ export function CreateBookingPage() {
             required
           />
           <Input
-            label="Mehmonlar soni"
+            label="Stollar soni"
             type="number"
             min={1}
             max={venue.capacity}
-            value={guestCount}
-            onChange={(e) => setGuestCount(e.target.value)}
-            hint={`Maksimum: ${venue.capacity}`}
+            value={tableCount}
+            onChange={(e) => setTableCount(e.target.value)}
+            hint={`Maksimum: ${venue.capacity} stol`}
             required
           />
           {venue.singers?.length > 0 && (
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-slate-300">
-                Qo&apos;shiqchi (ixtiyoriy)
+              <label className="mb-1.5 block text-sm font-medium text-stone-700">
+                Artist (ixtiyoriy)
               </label>
               <select
                 value={selectedSinger}
                 onChange={(e) => setSelectedSinger(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-surface-800/80 px-4 py-2.5 text-sm text-white"
+                className={selectClass}
               >
                 <option value="">Tanlanmagan</option>
                 {venue.singers.map((s) => (
@@ -138,14 +175,10 @@ export function CreateBookingPage() {
           )}
           {cars.length > 0 && (
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-slate-300">
+              <label className="mb-1.5 block text-sm font-medium text-stone-700">
                 Mashina (ixtiyoriy)
               </label>
-              <select
-                value={selectedCar}
-                onChange={(e) => setSelectedCar(e.target.value)}
-                className="w-full rounded-xl border border-white/10 bg-surface-800/80 px-4 py-2.5 text-sm text-white"
-              >
+              <select value={selectedCar} onChange={(e) => setSelectedCar(e.target.value)} className={selectClass}>
                 <option value="">Tanlanmagan</option>
                 {cars.map((c) => (
                   <option key={c.id} value={c.id}>
@@ -155,31 +188,73 @@ export function CreateBookingPage() {
               </select>
             </div>
           )}
+          {venue.menu_items?.length > 0 && (
+            <div>
+              <label className="mb-1.5 block text-sm font-medium text-stone-700">
+                Taom paketi (ixtiyoriy)
+              </label>
+              <select value={selectedMenu} onChange={(e) => setSelectedMenu(e.target.value)} className={selectClass}>
+                <option value="">Tanlanmagan</option>
+                {venue.menu_items.map((m) => (
+                  <option key={m.id} value={m.id}>
+                    {m.name} — {formatPrice(m.price)}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           {venue.karnay_surnay?.available && (
-            <label className="flex items-center gap-2 text-sm text-slate-300">
+            <label className="flex items-center gap-2 text-sm text-stone-700">
               <input
                 type="checkbox"
                 checked={includeKarnay}
                 onChange={(e) => setIncludeKarnay(e.target.checked)}
-                className="rounded border-white/20"
+                className="rounded border-gold-400/40 text-gold-500 focus:ring-gold-400"
               />
               Karnay-surnay ({formatPrice(venue.karnay_surnay.price)})
             </label>
           )}
-          <div className="rounded-xl bg-brand-500/10 p-4 text-sm">
-            <p className="text-slate-400">Taxminiy asosiy summa</p>
-            <p className="text-lg font-bold text-brand-400">
-              {estimatedBase > 0 ? formatPrice(estimatedBase) : '—'}
-            </p>
-            <p className="mt-1 text-xs text-slate-500">
-              + qo&apos;shimcha xizmatlar. Oldindan to&apos;lov 20%.
-            </p>
+          <div className="rounded-xl bg-cream-100 p-4 text-sm">
+            <p className="font-medium text-stone-600">Narx hisob-kitobi</p>
+            {tableCount ? (
+              <div className="mt-2 space-y-1 text-stone-600">
+                <div className="flex justify-between">
+                  <span>
+                    Stollar ({tableCount} × {formatPrice(venue.price)})
+                  </span>
+                  <span>{formatPrice(priceBreakdown.baseTotal)}</span>
+                </div>
+                {priceBreakdown.extras.map((extra) => (
+                  <div key={extra.label} className="flex justify-between">
+                    <span>{extra.label}</span>
+                    <span>{formatPrice(extra.price)}</span>
+                  </div>
+                ))}
+                <div className="mt-2 flex justify-between border-t border-gold-400/20 pt-2 text-base font-bold text-gold-600">
+                  <span>Jami</span>
+                  <span>{formatPrice(priceBreakdown.totalPrice)}</span>
+                </div>
+                <p className="text-xs text-stone-500">
+                  Oldindan to&apos;lov: {formatPrice(priceBreakdown.advancePaid)} (20%)
+                </p>
+              </div>
+            ) : (
+              <p className="mt-2 text-stone-400">Stollar sonini kiriting</p>
+            )}
           </div>
-          <Button type="submit" className="w-full" loading={saving} disabled={!eventDate}>
-            Bronni tasdiqlash
+          <Button type="submit" className="w-full" disabled={!eventDate || !tableCount}>
+            Continue
           </Button>
         </form>
       </div>
+
+      <PaymentModal
+        open={showPayment}
+        totalPrice={priceBreakdown.totalPrice}
+        advancePaid={priceBreakdown.advancePaid}
+        onClose={() => setShowPayment(false)}
+        onPay={handlePayment}
+      />
     </div>
   );
 }

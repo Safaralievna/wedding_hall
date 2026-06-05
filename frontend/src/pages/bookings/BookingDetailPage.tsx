@@ -52,27 +52,27 @@ export function BookingDetailPage() {
       <div className="glass space-y-6 rounded-2xl p-6">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="text-xl font-bold text-white">{booking.venue_name}</h2>
-            <p className="text-slate-400">{booking.district_name}</p>
+            <h2 className="font-display text-xl font-bold text-stone-800">{booking.venue_name}</h2>
+            <p className="text-stone-500">{booking.district_name}</p>
           </div>
           <Badge status={booking.status} />
         </div>
         <dl className="grid gap-4 sm:grid-cols-2">
           <div>
-            <dt className="text-xs text-slate-500">Sana</dt>
-            <dd className="font-medium text-white">{formatDate(booking.event_date)}</dd>
+            <dt className="text-xs text-stone-500">Sana</dt>
+            <dd className="font-medium text-stone-800">{formatDate(booking.event_date)}</dd>
           </div>
           <div>
-            <dt className="text-xs text-slate-500">Mehmonlar</dt>
-            <dd className="font-medium text-white">{booking.guest_count}</dd>
+            <dt className="text-xs text-stone-500">Stollar soni</dt>
+            <dd className="font-medium text-stone-800">{booking.guest_count}</dd>
           </div>
           <div>
-            <dt className="text-xs text-slate-500">Jami summa</dt>
-            <dd className="font-medium text-brand-400">{formatPrice(booking.total_price)}</dd>
+            <dt className="text-xs text-stone-500">Jami summa</dt>
+            <dd className="font-medium text-gold-600">{formatPrice(booking.total_price)}</dd>
           </div>
           <div>
-            <dt className="text-xs text-slate-500">Oldindan to'lov (20%)</dt>
-            <dd className="font-medium text-white">{formatPrice(booking.advance_paid)}</dd>
+            <dt className="text-xs text-stone-500">Oldindan to&apos;lov (20%)</dt>
+            <dd className="font-medium text-stone-800">{formatPrice(booking.advance_paid)}</dd>
           </div>
           {booking.first_name && (
             <div className="sm:col-span-2">
@@ -96,7 +96,7 @@ export function BookingDetailPage() {
             </ul>
           </div>
         )}
-        {booking.status === 'upcoming' && (
+        {['confirmed', 'upcoming'].includes(booking.status) && (
           <Button variant="danger" onClick={handleCancel} loading={cancelling}>
             Bekor qilish
           </Button>

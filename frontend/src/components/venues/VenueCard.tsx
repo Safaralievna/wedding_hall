@@ -12,14 +12,13 @@ interface VenueCardProps {
 }
 
 export function VenueCard({ venue, showStatus, editPath, managePath }: VenueCardProps) {
-  const primary =
-    venue.images?.find((i) => i.is_primary) || venue.images?.[0];
+  const primary = venue.images?.find((i) => i.is_primary) || venue.images?.[0];
   const imgUrl = getImageUrl(primary?.url);
 
   return (
     <article className="glass card-hover group overflow-hidden rounded-2xl">
       <Link to={`/venues/${venue.id}`} className="block">
-        <div className="relative aspect-[16/10] overflow-hidden bg-surface-800">
+        <div className="relative aspect-[16/10] overflow-hidden bg-cream-200">
           {imgUrl ? (
             <img
               src={imgUrl}
@@ -27,13 +26,13 @@ export function VenueCard({ venue, showStatus, editPath, managePath }: VenueCard
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full items-center justify-center bg-gradient-to-br from-brand-600/30 to-accent-500/20">
-              <span className="text-4xl font-bold text-white/20">
+            <div className="flex h-full items-center justify-center bg-gradient-to-br from-gold-400/20 to-blush-400/20">
+              <span className="font-display text-4xl font-bold text-gold-400/40">
                 {venue.name.charAt(0)}
               </span>
             </div>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-surface-950/90 via-transparent to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-stone-900/60 via-transparent to-transparent" />
           {showStatus && (
             <div className="absolute right-3 top-3">
               <Badge status={venue.status} />
@@ -41,39 +40,34 @@ export function VenueCard({ venue, showStatus, editPath, managePath }: VenueCard
           )}
         </div>
         <div className="p-5">
-          <h3 className="text-lg font-semibold text-white group-hover:text-brand-300">
+          <h3 className="font-display text-lg font-semibold text-stone-800 group-hover:text-gold-600">
             {venue.name}
           </h3>
-          <p className="mt-1 flex items-center gap-1.5 text-sm text-slate-400">
+          <p className="mt-1 flex items-center gap-1.5 text-sm text-stone-500">
             <MapPin className="h-3.5 w-3.5 shrink-0" />
             {venue.district_name}
           </p>
           <div className="mt-4 flex items-center justify-between">
-            <span className="text-lg font-bold text-brand-400">
-              {formatPrice(venue.price)}
-            </span>
-            <span className="flex items-center gap-1 text-sm text-slate-400">
+            <div>
+              <span className="text-lg font-bold text-gold-600">{formatPrice(venue.price)}</span>
+              <span className="ml-1 text-xs text-stone-400">/ stol</span>
+            </div>
+            <span className="flex items-center gap-1 text-sm text-stone-500">
               <Users className="h-4 w-4" />
-              {venue.capacity} kishi
+              {venue.capacity} stol
             </span>
           </div>
         </div>
       </Link>
       {(editPath || managePath) && (
-        <div className="flex gap-4 border-t border-white/5 px-5 py-3">
+        <div className="flex gap-4 border-t border-gold-400/10 px-5 py-3">
           {managePath && (
-            <Link
-              to={managePath}
-              className="text-sm font-medium text-brand-400 hover:text-brand-300"
-            >
+            <Link to={managePath} className="text-sm font-medium text-gold-600 hover:text-gold-500">
               Boshqarish →
             </Link>
           )}
           {editPath && (
-            <Link
-              to={editPath}
-              className="text-sm font-medium text-slate-400 hover:text-white"
-            >
+            <Link to={editPath} className="text-sm font-medium text-stone-500 hover:text-stone-800">
               Tahrirlash
             </Link>
           )}

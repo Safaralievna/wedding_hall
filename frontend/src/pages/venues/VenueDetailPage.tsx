@@ -86,13 +86,13 @@ export function VenueDetailPage() {
           <div className="sm:col-span-2 space-y-6">
             <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
               <div className="rounded-xl bg-white/5 p-4">
-                <p className="text-xs text-slate-500">Narx (kishi)</p>
-                <p className="mt-1 text-lg font-bold text-brand-400">{formatPrice(venue.price)}</p>
+                <p className="text-xs text-stone-500">Stol narxi</p>
+                <p className="mt-1 text-lg font-bold text-gold-600">{formatPrice(venue.price)}</p>
               </div>
-              <div className="rounded-xl bg-white/5 p-4">
-                <p className="text-xs text-slate-500">Sig&apos;im</p>
-                <p className="mt-1 flex items-center gap-1 text-lg font-bold text-white">
-                  <Users className="h-4 w-4 text-slate-400" />
+              <div className="rounded-xl bg-cream-100 p-4">
+                <p className="text-xs text-stone-500">Sig&apos;im (stollar)</p>
+                <p className="mt-1 flex items-center gap-1 text-lg font-bold text-stone-800">
+                  <Users className="h-4 w-4 text-stone-400" />
                   {venue.capacity}
                 </p>
               </div>
@@ -139,7 +139,8 @@ export function VenueDetailPage() {
                       {getImageUrl(m.image) ? (
                         <img src={getImageUrl(m.image)!} alt="" className="mx-auto mb-2 h-20 w-full rounded-lg object-cover" />
                       ) : null}
-                      <p className="text-sm text-white">{m.name}</p>
+                      <p className="text-sm text-stone-800">{m.name}</p>
+                      <p className="text-xs text-gold-600">{formatPrice(m.price)}</p>
                     </div>
                   ))}
                 </div>

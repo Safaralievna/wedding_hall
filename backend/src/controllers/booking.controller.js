@@ -1,12 +1,47 @@
 const pool = require("../config/db");
 const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
+const { calculateBookingPrice } = require("../utils/bookingPrice");
 
 const isPastDate = (dateString) => {
   const inputDate = new Date(`${dateString}T00:00:00`);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return inputDate < today;
+};
+
+const resolveExtraPrice = async (extra, venueId) => {
+  if (!extra.type || extra.id === undefined || extra.id === null) {
+    throw new ApiError(400, "Qo'shimcha xizmat formati noto'g'ri");
+  }
+
+  let query = null;
+  if (extra.type === "singer") {
+    query = "SELECT id, price FROM singers WHERE id = $1 AND venue_id = $2 LIMIT 1";
+  } else if (extra.type === "karnay") {
+    query =
+      "SELECT venue_id AS id, price FROM karnay_surnay WHERE venue_id = $1 AND available = TRUE LIMIT 1";
+  } else if (extra.type === "car") {
+    query = "SELECT id, price FROM cars WHERE id = $1 AND venue_id = $2 LIMIT 1";
+  } else if (extra.type === "menu") {
+    query = "SELECT id, price FROM menu_items WHERE id = $1 AND venue_id = $2 LIMIT 1";
+  } else {
+    throw new ApiError(400, "Noto'g'ri extra type");
+  }
+
+  const params = extra.type === "karnay" ? [venueId] : [extra.id, venueId];
+  const extraResult = await pool.query(query, params);
+  const row = extraResult.rows[0];
+
+  if (!row) {
+    throw new ApiError(404, `${extra.type} topilmadi`);
+  }
+
+  return {
+    type: extra.type,
+    id: row.id,
+    price: Number(row.price || 0),
+  };
 };
 
 const getBookings = asyncHandler(async (req, res) => {
@@ -98,11 +133,13 @@ const createBooking = asyncHandler(async (req, res) => {
   }
 
   if (Number(guestCount) > Number(venue.capacity)) {
-    throw new ApiError(400, "Odamlar soni to'yxona sig'imidan katta");
+    throw new ApiError(400, "Stollar soni to'yxona sig'imidan katta");
   }
 
   const exists = await pool.query(
-    "SELECT id FROM bookings WHERE venue_id = $1 AND event_date = $2 LIMIT 1",
+    `SELECT id FROM bookings
+     WHERE venue_id = $1 AND event_date = $2 AND status != 'cancelled'
+     LIMIT 1`,
     [venueId, eventDate]
   );
 
@@ -111,70 +148,53 @@ const createBooking = asyncHandler(async (req, res) => {
   }
 
   const extraDetails = [];
-  let extrasTotal = 0;
-
   for (const extra of extras) {
-    if (!extra.type || !extra.id) {
-      throw new ApiError(400, "Qo'shimcha xizmat formati noto'g'ri");
-    }
-
-    let query = null;
-    if (extra.type === "singer") {
-      query = "SELECT id, price FROM singers WHERE id = $1 AND venue_id = $2 LIMIT 1";
-    } else if (extra.type === "karnay") {
-      query = "SELECT venue_id AS id, price FROM karnay_surnay WHERE venue_id = $1 LIMIT 1";
-    } else if (extra.type === "car") {
-      query = "SELECT id, price FROM cars WHERE id = $1 AND venue_id = $2 LIMIT 1";
-    } else {
-      throw new ApiError(400, "Noto'g'ri extra type");
-    }
-
-    const params = extra.type === "karnay" ? [venueId] : [extra.id, venueId];
-    const extraResult = await pool.query(query, params);
-    const row = extraResult.rows[0];
-
-    if (!row) {
-      throw new ApiError(404, `${extra.type} topilmadi`);
-    }
-
-    const price = Number(row.price || 0);
-    extrasTotal += price;
-    extraDetails.push({
-      type: extra.type,
-      id: row.id,
-      price,
-    });
+    extraDetails.push(await resolveExtraPrice(extra, venueId));
   }
 
-  const baseTotal = Number(venue.price) * Number(guestCount);
-  const totalPrice = Number((baseTotal + extrasTotal).toFixed(2));
-  const advancePaid = Number((totalPrice * 0.2).toFixed(2));
-
-  const bookingResult = await pool.query(
-    `INSERT INTO bookings (venue_id, user_id, event_date, guest_count, total_price, advance_paid, status)
-     VALUES ($1, $2, $3, $4, $5, $6, 'upcoming')
-     RETURNING *`,
-    [venueId, userId, eventDate, guestCount, totalPrice, advancePaid]
+  const { totalPrice, advancePaid } = calculateBookingPrice(
+    venue.price,
+    guestCount,
+    extraDetails.map((item) => item.price)
   );
 
-  const booking = bookingResult.rows[0];
+  const client = await pool.connect();
+  try {
+    await client.query("BEGIN");
 
-  for (const extra of extraDetails) {
-    await pool.query(
-      `INSERT INTO booking_extras (booking_id, extra_type, extra_id, price)
-       VALUES ($1, $2, $3, $4)`,
-      [booking.id, extra.type, extra.id, extra.price]
+    const bookingResult = await client.query(
+      `INSERT INTO bookings (venue_id, user_id, event_date, guest_count, total_price, advance_paid, status)
+       VALUES ($1, $2, $3, $4, $5, $6, 'confirmed')
+       RETURNING *`,
+      [venueId, userId, eventDate, guestCount, totalPrice, advancePaid]
     );
-  }
 
-  res.status(201).json({
-    message: "Muvaffaqiyatli to'landi",
-    booking,
-    payment: {
-      totalPrice,
-      advancePaid,
-    },
-  });
+    const booking = bookingResult.rows[0];
+
+    for (const extra of extraDetails) {
+      await client.query(
+        `INSERT INTO booking_extras (booking_id, extra_type, extra_id, price)
+         VALUES ($1, $2, $3, $4)`,
+        [booking.id, extra.type, extra.id, extra.price]
+      );
+    }
+
+    await client.query("COMMIT");
+
+    res.status(201).json({
+      message: "Booking completed successfully",
+      booking,
+      payment: {
+        totalPrice,
+        advancePaid,
+      },
+    });
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
 });
 
 const getBookingById = asyncHandler(async (req, res) => {
@@ -218,12 +238,7 @@ const getBookingById = asyncHandler(async (req, res) => {
     booking.user_id === userId ||
     (role === "owner" && booking.owner_id === userId);
 
-  if (role === "owner") {
-    const ownerCheck = await pool.query("SELECT owner_id FROM venues WHERE id = $1 LIMIT 1", [booking.venue_id]);
-    if (!ownerCheck.rows[0] || ownerCheck.rows[0].owner_id !== userId) {
-      throw new ApiError(403, "Bu bronni ko'rish huquqingiz yo'q");
-    }
-  } else if (!allowed && role !== "admin") {
+  if (!allowed) {
     throw new ApiError(403, "Bu bronni ko'rish huquqingiz yo'q");
   }
 
@@ -247,7 +262,7 @@ const cancelBooking = asyncHandler(async (req, res) => {
   const role = req.user.role;
 
   const bookingResult = await pool.query(
-    `SELECT b.id, b.user_id, v.owner_id
+    `SELECT b.id, b.user_id, b.status, v.owner_id
      FROM bookings b
      JOIN venues v ON v.id = b.venue_id
      WHERE b.id = $1
@@ -258,6 +273,10 @@ const cancelBooking = asyncHandler(async (req, res) => {
   const booking = bookingResult.rows[0];
   if (!booking) {
     throw new ApiError(404, "Bron topilmadi");
+  }
+
+  if (booking.status === "cancelled") {
+    throw new ApiError(400, "Bron allaqachon bekor qilingan");
   }
 
   const allowed =

@@ -13,7 +13,7 @@ const getAdminStats = asyncHandler(async (req, res) => {
   const [pendingVenues, approvedVenues, upcomingBookings, cancelledBookings] = await Promise.all([
     pool.query(`SELECT COUNT(*)::int AS count FROM venues WHERE status = 'pending'`),
     pool.query(`SELECT COUNT(*)::int AS count FROM venues WHERE status = 'approved'`),
-    pool.query(`SELECT COUNT(*)::int AS count FROM bookings WHERE status = 'upcoming'`),
+    pool.query(`SELECT COUNT(*)::int AS count FROM bookings WHERE status IN ('upcoming', 'confirmed')`),
     pool.query(`SELECT COUNT(*)::int AS count FROM bookings WHERE status = 'cancelled'`),
   ]);
 
@@ -45,7 +45,7 @@ const getOwnerStats = asyncHandler(async (req, res) => {
       SELECT COUNT(*)::int AS count
       FROM bookings b
       JOIN venues v ON v.id = b.venue_id
-      WHERE v.owner_id = $1 AND b.status = 'upcoming'
+      WHERE v.owner_id = $1 AND b.status IN ('upcoming', 'confirmed')
     `, [ownerId]),
     pool.query(`SELECT COUNT(*)::int AS count FROM venues WHERE owner_id = $1 AND status = 'approved'`, [ownerId]),
     pool.query(`SELECT COUNT(*)::int AS count FROM venues WHERE owner_id = $1 AND status = 'pending'`, [ownerId]),

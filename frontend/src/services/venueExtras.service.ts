@@ -63,9 +63,10 @@ export const venueExtrasService = {
   // Menu
   listMenuItems: (venueId: number) => api.get<MenuItem[]>(`/venues/${venueId}/menu-items`),
 
-  createMenuItem: (venueId: number, name: string, image?: File) => {
+  createMenuItem: (venueId: number, name: string, price: number, image?: File) => {
     const form = new FormData();
     form.append('name', name);
+    form.append('price', String(price));
     if (image) form.append('image', image);
     return api.post<{ message: string; menuItem: MenuItem }>(
       `/venues/${venueId}/menu-items`,
@@ -73,9 +74,15 @@ export const venueExtrasService = {
     );
   },
 
-  updateMenuItem: (venueId: number, menuItemId: number, name?: string, image?: File) => {
+  updateMenuItem: (
+    venueId: number,
+    menuItemId: number,
+    data: { name?: string; price?: number },
+    image?: File
+  ) => {
     const form = new FormData();
-    if (name !== undefined) form.append('name', name);
+    if (data.name !== undefined) form.append('name', data.name);
+    if (data.price !== undefined) form.append('price', String(data.price));
     if (image) form.append('image', image);
     return api.patch<{ message: string; menuItem: MenuItem }>(
       `/venues/${venueId}/menu-items/${menuItemId}`,

@@ -47,6 +47,7 @@ export interface Singer {
 export interface MenuItem {
   id: number;
   name: string;
+  price: string | number;
   image?: string | null;
 }
 
@@ -78,7 +79,7 @@ export interface Booking {
   guest_count: number;
   total_price: string | number;
   advance_paid: string | number;
-  status: 'upcoming' | 'completed' | 'cancelled';
+  status: 'confirmed' | 'upcoming' | 'completed' | 'cancelled';
   created_at: string;
   venue_id: number;
   venue_name: string;

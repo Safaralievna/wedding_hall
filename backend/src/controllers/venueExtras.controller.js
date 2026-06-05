@@ -4,7 +4,10 @@ const pool = require("../config/db");
 const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
 
-const uploadBaseUrl = (req) => `${req.protocol}://${req.get("host")}/uploads`;
+const uploadBaseUrl = (req) => {
+  const protocol = req.get("x-forwarded-proto") || req.protocol;
+  return `${protocol}://${req.get("host")}/uploads`;
+};
 
 const getVenueAccess = async (venueId, currentUser) => {
   const result = await pool.query("SELECT id, owner_id FROM venues WHERE id = $1 LIMIT 1", [venueId]);
@@ -264,7 +267,7 @@ const upsertKarnaySurnay = asyncHandler(async (req, res) => {
 const listMenuItems = asyncHandler(async (req, res) => {
   const { venueId } = req.params;
   const result = await pool.query(
-    "SELECT id, venue_id, name, image, created_at FROM menu_items WHERE venue_id = $1 ORDER BY id DESC",
+    "SELECT id, venue_id, name, price, image, created_at FROM menu_items WHERE venue_id = $1 ORDER BY id DESC",
     [venueId]
   );
   res.json(result.rows);
@@ -275,17 +278,20 @@ const createMenuItem = asyncHandler(async (req, res) => {
   const currentUser = req.user;
   await getVenueAccess(venueId, currentUser);
 
-  const { name } = req.body;
+  const { name, price } = req.body;
   if (!name) {
     throw new ApiError(400, "Nomi majburiy");
+  }
+  if (price === undefined || Number(price) < 0) {
+    throw new ApiError(400, "price musbat son bo'lishi kerak");
   }
 
   const image = req.file ? toFileUrl(req, req.file.filename) : null;
   const result = await pool.query(
-    `INSERT INTO menu_items (venue_id, name, image)
-     VALUES ($1, $2, $3)
-     RETURNING id, venue_id, name, image, created_at`,
-    [venueId, name, image]
+    `INSERT INTO menu_items (venue_id, name, price, image)
+     VALUES ($1, $2, $3, $4)
+     RETURNING id, venue_id, name, price, image, created_at`,
+    [venueId, name, price, image]
   );
 
   res.status(201).json({ message: "Menu qo'shildi", menuItem: result.rows[0] });
@@ -310,6 +316,11 @@ const updateMenuItem = asyncHandler(async (req, res) => {
     updates.push(`name = $${values.length}`);
   }
 
+  if (req.body.price !== undefined) {
+    values.push(req.body.price);
+    updates.push(`price = $${values.length}`);
+  }
+
   if (req.file) {
     const image = toFileUrl(req, req.file.filename);
     values.push(image);
@@ -326,7 +337,7 @@ const updateMenuItem = asyncHandler(async (req, res) => {
   const result = await pool.query(
     `UPDATE menu_items SET ${updates.join(", ")}
      WHERE id = $${values.length - 1} AND venue_id = $${values.length}
-     RETURNING id, venue_id, name, image, created_at`,
+     RETURNING id, venue_id, name, price, image, created_at`,
     values
   );
 

@@ -11,7 +11,7 @@ export interface CreateBookingPayload {
   venueId: number;
   eventDate: string;
   guestCount: number;
-  extras?: Array<{ type: 'singer' | 'karnay' | 'car'; id: number }>;
+  extras?: Array<{ type: 'singer' | 'karnay' | 'car' | 'menu'; id: number }>;
 }
 
 export const bookingService = {

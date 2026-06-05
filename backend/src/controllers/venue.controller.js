@@ -49,6 +49,16 @@ const buildVenueFilters = (query) => {
     conditions.push(`v.status = $${values.length}`);
   }
 
+  if (query.minPrice) {
+    values.push(query.minPrice);
+    conditions.push(`v.price >= $${values.length}`);
+  }
+
+  if (query.maxPrice) {
+    values.push(query.maxPrice);
+    conditions.push(`v.price <= $${values.length}`);
+  }
+
   const whereClause = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
   return { values, whereClause };
 };
@@ -131,21 +141,19 @@ const getVenueById = asyncHandler(async (req, res) => {
   const [singers, car, menuItems, bookings] = await Promise.all([
     pool.query("SELECT id, name, price, image FROM singers WHERE venue_id = $1 ORDER BY id DESC", [id]),
     pool.query("SELECT id, available, price FROM karnay_surnay WHERE venue_id = $1", [id]),
-    pool.query("SELECT id, name, image FROM menu_items WHERE venue_id = $1 ORDER BY id DESC", [id]),
+    pool.query(
+      "SELECT id, name, price, image FROM menu_items WHERE venue_id = $1 ORDER BY id DESC",
+      [id]
+    ),
     pool.query(
       `
         SELECT
           b.id,
           b.event_date,
           b.guest_count,
-          b.status,
-          b.user_id,
-          u.first_name,
-          u.last_name,
-          u.phone
+          b.status
         FROM bookings b
-        LEFT JOIN users u ON u.id = b.user_id
-        WHERE b.venue_id = $1
+        WHERE b.venue_id = $1 AND b.status != 'cancelled'
         ORDER BY b.event_date DESC
       `,
       [id]
@@ -214,7 +222,12 @@ const updateVenue = asyncHandler(async (req, res) => {
     throw new ApiError(403, "Faqat o'zingizning to'yxonangizni tahrirlay olasiz");
   }
 
-  const fields = ["name", "districtId", "address", "capacity", "price", "phone", "status", "ownerId"];
+  if (currentUser.role === "owner") {
+    delete req.body.status;
+    delete req.body.ownerId;
+  }
+
+  const fields = ["name", "districtId", "address", "capacity", "price", "phone", "status", "ownerId", "description"];
   const updates = [];
   const values = [];
 
@@ -325,7 +338,8 @@ const getVenueCalendar = asyncHandler(async (req, res) => {
     if (cursor < today) {
       status = "past";
     } else if (bookedMap.has(dateKey)) {
-      status = bookedMap.get(dateKey) === "cancelled" ? "free" : "booked";
+      const bookingStatus = bookedMap.get(dateKey);
+      status = bookingStatus === "cancelled" ? "free" : "booked";
     }
 
     days.push({

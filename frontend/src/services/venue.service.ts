@@ -5,6 +5,8 @@ export interface VenueFilters {
   search?: string;
   districtId?: number;
   status?: string;
+  minPrice?: number;
+  maxPrice?: number;
   sortBy?: 'capacity' | 'price';
   order?: 'asc' | 'desc';
 }

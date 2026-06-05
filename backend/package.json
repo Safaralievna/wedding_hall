@@ -2,6 +2,7 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "node src/server.js",
+    "seed": "node scripts/seed.js",
     "seed:dev-auth": "node scripts/set-dev-passwords.js"
   },
   "dependencies": {
