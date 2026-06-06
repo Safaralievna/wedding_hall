@@ -9,7 +9,7 @@ import type { Venue } from '@/types';
 import toast from 'react-hot-toast';
 
 const HERO_IMAGE =
-  'https://images.unsplash.com/photo-1519741497674-611481863552?w=900&q=85&auto=format&fit=crop';
+  'https://i.pinimg.com/736x/ea/a6/37/eaa637466777ac47de0dff4ae3135873.jpg';
 
 export function HomePage() {
   const [venues, setVenues] = useState<Venue[]>([]);

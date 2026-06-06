@@ -2,7 +2,7 @@ import { Outlet, Link } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
 
 const AUTH_IMAGE =
-  'https://images.unsplash.com/photo-1606216794074-735e91aa2c92?w=800&q=85&auto=format&fit=crop';
+  'https://www.idaliaphotography.com/wp-content/uploads/2021/08/ballroom-at-the-ben-wedding_0038.jpg';
 
 export function AuthLayout() {
   return (
