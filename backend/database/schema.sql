@@ -114,10 +114,48 @@ CREATE INDEX IF NOT EXISTS idx_bookings_user ON bookings(user_id);
 ALTER TABLE venues ADD COLUMN IF NOT EXISTS description TEXT;
 ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS price NUMERIC(12, 2) NOT NULL DEFAULT 0;
 
-ALTER TABLE bookings DROP CONSTRAINT IF EXISTS bookings_status_check;
-ALTER TABLE bookings ADD CONSTRAINT bookings_status_check
-  CHECK (status IN ('confirmed', 'upcoming', 'completed', 'cancelled'));
+-- Legacy enum migrations (older DBs used PostgreSQL enums)
+DO $$
+DECLARE
+  enum_pair RECORD;
+BEGIN
+  FOR enum_pair IN
+    SELECT * FROM (VALUES
+      ('booking_status', 'confirmed'),
+      ('extra_type', 'menu'),
+      ('venue_status', 'rejected')
+    ) AS t(enum_name, enum_value)
+  LOOP
+    IF EXISTS (SELECT 1 FROM pg_type WHERE typname = enum_pair.enum_name) THEN
+      IF NOT EXISTS (
+        SELECT 1 FROM pg_enum e
+        JOIN pg_type t ON e.enumtypid = t.oid
+        WHERE t.typname = enum_pair.enum_name AND e.enumlabel = enum_pair.enum_value
+      ) THEN
+        EXECUTE format('ALTER TYPE %I ADD VALUE %L', enum_pair.enum_name, enum_pair.enum_value);
+      END IF;
+    END IF;
+  END LOOP;
+END $$;
 
-ALTER TABLE booking_extras DROP CONSTRAINT IF EXISTS booking_extras_extra_type_check;
-ALTER TABLE booking_extras ADD CONSTRAINT booking_extras_extra_type_check
-  CHECK (extra_type IN ('singer', 'karnay', 'car', 'menu'));
+-- VARCHAR check constraints (skip when column uses enum type)
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'bookings' AND column_name = 'status' AND data_type = 'character varying'
+  ) THEN
+    ALTER TABLE bookings DROP CONSTRAINT IF EXISTS bookings_status_check;
+    ALTER TABLE bookings ADD CONSTRAINT bookings_status_check
+      CHECK (status IN ('confirmed', 'upcoming', 'completed', 'cancelled'));
+  END IF;
+
+  IF EXISTS (
+    SELECT 1 FROM information_schema.columns
+    WHERE table_name = 'booking_extras' AND column_name = 'extra_type' AND data_type = 'character varying'
+  ) THEN
+    ALTER TABLE booking_extras DROP CONSTRAINT IF EXISTS booking_extras_extra_type_check;
+    ALTER TABLE booking_extras ADD CONSTRAINT booking_extras_extra_type_check
+      CHECK (extra_type IN ('singer', 'karnay', 'car', 'menu'));
+  END IF;
+END $$;
