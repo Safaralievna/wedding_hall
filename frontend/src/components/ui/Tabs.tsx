@@ -11,16 +11,18 @@ interface TabsProps {
 
 export function Tabs({ tabs, active, onChange }: TabsProps) {
   return (
-    <div className="flex flex-wrap gap-2 border-b border-white/10 pb-4">
+    <div className="flex flex-wrap gap-2 border-b border-border pb-4" role="tablist">
       {tabs.map((tab) => (
         <button
           key={tab.id}
           type="button"
+          role="tab"
+          aria-selected={active === tab.id}
           onClick={() => onChange(tab.id)}
-          className={`rounded-xl px-4 py-2 text-sm font-medium transition-all ${
+          className={`rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200 ${
             active === tab.id
-              ? 'bg-brand-500/20 text-brand-300 shadow-sm shadow-brand-500/10'
-              : 'text-slate-400 hover:bg-white/5 hover:text-white'
+              ? 'bg-gray-900 text-white shadow-sm'
+              : 'text-gray-500 hover:bg-cream-200 hover:text-gray-900'
           }`}
         >
           {tab.label}

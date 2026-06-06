@@ -4,26 +4,26 @@ interface StatCardProps {
   label: string;
   value: string | number;
   icon: LucideIcon;
-  accent?: 'violet' | 'sky' | 'emerald' | 'amber';
+  accent?: 'rose' | 'sky' | 'emerald' | 'amber';
 }
 
 const accents = {
-  violet: 'from-brand-600/20 to-brand-500/5 text-brand-400',
-  sky: 'from-sky-500/20 to-sky-500/5 text-sky-400',
-  emerald: 'from-emerald-500/20 to-emerald-500/5 text-emerald-400',
-  amber: 'from-amber-500/20 to-amber-500/5 text-amber-400',
+  rose: 'border-rose-200 bg-rose-50 text-rose-600',
+  sky: 'border-sky-200 bg-sky-50 text-sky-600',
+  emerald: 'border-emerald-200 bg-emerald-50 text-emerald-600',
+  amber: 'border-amber-200 bg-amber-50 text-amber-600',
 };
 
-export function StatCard({ label, value, icon: Icon, accent = 'violet' }: StatCardProps) {
+export function StatCard({ label, value, icon: Icon, accent = 'rose' }: StatCardProps) {
   return (
-    <div className={`glass card-hover rounded-2xl bg-gradient-to-br p-5 ${accents[accent]}`}>
+    <div className={`surface-card card-hover p-5 ${accents[accent]}`}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-medium text-slate-400">{label}</p>
-          <p className="mt-2 text-3xl font-bold text-white">{value}</p>
+          <p className="text-sm font-medium text-gray-500">{label}</p>
+          <p className="mt-2 text-3xl font-bold text-gray-900">{value}</p>
         </div>
-        <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/5">
-          <Icon className="h-5 w-5" />
+        <div className={`flex h-11 w-11 items-center justify-center rounded-xl border ${accents[accent]}`}>
+          <Icon className="h-5 w-5" aria-hidden="true" />
         </div>
       </div>
     </div>

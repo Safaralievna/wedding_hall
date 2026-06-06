@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { Sparkles } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { Input } from '@/components/ui/Input';
@@ -35,12 +34,8 @@ export function LoginPage() {
 
   return (
     <div>
-      <div className="mb-8 flex items-center gap-2 lg:hidden">
-        <Sparkles className="h-6 w-6 text-brand-400" />
-        <span className="font-bold text-white">Wedding Hall</span>
-      </div>
-      <h1 className="text-2xl font-bold text-white">Hisobingizga kiring</h1>
-      <p className="mt-2 text-slate-400">
+      <h1 className="heading-display text-2xl">Hisobingizga kiring</h1>
+      <p className="mt-2 text-gray-500">
         Telefon, email yoki username va parol bilan kirish
       </p>
       <form onSubmit={handleSubmit} className="mt-8 space-y-5">
@@ -52,6 +47,7 @@ export function LoginPage() {
           placeholder="admin@wedding.uz yoki jasur01 yoki +998..."
           hint="User: telefon · Admin: email · Owner: username"
           required
+          autoComplete="username"
         />
         <Input
           label="Parol"
@@ -60,37 +56,32 @@ export function LoginPage() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
+          autoComplete="current-password"
         />
         <Button type="submit" className="w-full" size="lg" loading={loading}>
           Kirish
         </Button>
       </form>
 
-      <div className="mt-6 rounded-xl border border-white/10 bg-white/5 p-4 text-xs text-slate-400">
-        <p className="font-medium text-slate-300">Dev hisoblar (bir marta backendda):</p>
-        <p className="mt-2">
-          <code className="text-brand-300">npm run seed:dev-auth</code> — keyin:
-        </p>
+      <div className="mt-6 rounded-xl border border-border bg-cream-100 p-4 text-xs text-gray-500">
+        <p className="font-medium text-gray-700">Test hisoblar:</p>
         <ul className="mt-2 space-y-1">
-          <li>
-            <strong className="text-white">Admin:</strong> admin@wedding.uz · Admin1234
-          </li>
-          <li>
-            <strong className="text-white">Owner:</strong> jasur01 · Owner1234
-          </li>
+          <li><strong className="text-gray-800">Admin:</strong> admin@wedding.uz · Admin1234</li>
+          <li><strong className="text-gray-800">Owner:</strong> jasur01 · Owner1234</li>
+          <li><strong className="text-gray-800">User:</strong> +998901234567 · User12345</li>
         </ul>
       </div>
 
-      <p className="mt-6 text-center text-sm text-slate-400">
-        Hisobingiz yo'qmi?{' '}
-        <Link to="/register" className="font-medium text-brand-400 hover:text-brand-300">
-          Ro'yxatdan o'ting
+      <p className="mt-6 text-center text-sm text-gray-500">
+        Hisobingiz yo&apos;qmi?{' '}
+        <Link to="/register" className="font-semibold text-rose-600 hover:text-rose-500 transition-colors">
+          Ro&apos;yxatdan o&apos;ting
         </Link>
       </p>
-      <p className="mt-2 text-center text-sm text-slate-500">
-        To'yxona egasi?{' '}
-        <Link to="/register/owner" className="text-brand-400 hover:text-brand-300">
-          Owner ro'yxati
+      <p className="mt-2 text-center text-sm text-gray-400">
+        To&apos;yxona egasi?{' '}
+        <Link to="/register/owner" className="font-semibold text-rose-600 hover:text-rose-500 transition-colors">
+          Owner ro&apos;yxati
         </Link>
       </p>
     </div>

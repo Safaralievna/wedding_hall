@@ -43,22 +43,22 @@ export function BookingsPage({ admin }: BookingsPageProps) {
             <Link
               key={b.id}
               to={`/bookings/${b.id}`}
-              className="glass card-hover flex flex-col gap-2 rounded-xl p-4 sm:flex-row sm:items-center sm:justify-between"
+              className="surface-card card-hover flex flex-col gap-2 rounded-xl p-4 sm:flex-row sm:items-center sm:justify-between"
             >
               <div>
-                <p className="font-semibold text-white">{b.venue_name}</p>
-                <p className="text-sm text-slate-400">
+                <p className="font-semibold text-gray-900">{b.venue_name}</p>
+                <p className="text-sm text-gray-500">
                   {formatDate(b.event_date)} · {b.district_name}
                 </p>
                 {!admin && b.first_name && (
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs text-gray-400">
                     {b.first_name} {b.last_name}
                   </p>
                 )}
               </div>
               <div className="flex items-center gap-4">
                 <Badge status={b.status} />
-                <span className="font-medium text-brand-400">{formatPrice(b.total_price)}</span>
+                <span className="font-semibold text-rose-600">{formatPrice(b.total_price)}</span>
               </div>
             </Link>
           ))}

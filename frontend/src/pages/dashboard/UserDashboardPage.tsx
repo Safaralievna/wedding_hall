@@ -33,7 +33,7 @@ export function UserDashboardPage() {
         <StatCard label="Yaqinlashayotgan" value={upcoming} icon={CalendarDays} accent="sky" />
       </div>
       <div className="mb-4 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-stone-800">So&apos;nggi bronlar</h2>
+        <h2 className="text-lg font-semibold text-gray-900">So&apos;nggi bronlar</h2>
         <Link to="/venues">
           <Button variant="secondary" size="sm">
             <Building2 className="h-4 w-4" />
@@ -44,7 +44,7 @@ export function UserDashboardPage() {
       {loading ? (
         <Spinner />
       ) : bookings.length === 0 ? (
-        <p className="text-stone-500">Hali bronlar yo&apos;q. To&apos;yxona tanlang va bron qiling.</p>
+        <p className="text-gray-500">Hali bronlar yo&apos;q. To&apos;yxona tanlang va bron qiling.</p>
       ) : (
         <div className="space-y-3">
           {bookings.slice(0, 5).map((b) => (
@@ -54,12 +54,12 @@ export function UserDashboardPage() {
               className="glass card-hover flex items-center justify-between rounded-xl p-4"
             >
               <div>
-                <p className="font-medium text-stone-800">{b.venue_name}</p>
-                <p className="text-sm text-stone-500">{formatDate(b.event_date)}</p>
+                <p className="font-medium text-gray-900">{b.venue_name}</p>
+                <p className="text-sm text-gray-500">{formatDate(b.event_date)}</p>
               </div>
               <div className="text-right">
                 <Badge status={b.status} />
-                <p className="mt-1 text-sm text-gold-600">{formatPrice(b.total_price)}</p>
+                <p className="mt-1 text-sm font-semibold text-rose-600">{formatPrice(b.total_price)}</p>
               </div>
             </Link>
           ))}

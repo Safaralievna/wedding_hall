@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Heart, Search, Shield, Sparkles } from 'lucide-react';
+import { ArrowRight, Heart, Search, Shield, Sparkles, Star } from 'lucide-react';
 import { venueService } from '@/services/venue.service';
 import { VenueCard } from '@/components/venues/VenueCard';
 import { Button } from '@/components/ui/Button';
-import { Spinner } from '@/components/ui/Spinner';
+import { VenueGridSkeleton } from '@/components/ui/Skeleton';
 import type { Venue } from '@/types';
 import toast from 'react-hot-toast';
+
+const HERO_IMAGE =
+  'https://images.unsplash.com/photo-1519741497674-611481863552?w=900&q=85&auto=format&fit=crop';
 
 export function HomePage() {
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -22,74 +25,113 @@ export function HomePage() {
 
   return (
     <>
-      <section className="hero-pattern relative overflow-hidden px-4 py-24 sm:px-6 sm:py-32">
-        <div className="absolute inset-0 opacity-30">
-          <div className="absolute left-1/4 top-20 h-64 w-64 rounded-full bg-blush-400/20 blur-3xl" />
-          <div className="absolute right-1/4 bottom-10 h-72 w-72 rounded-full bg-gold-400/15 blur-3xl" />
-        </div>
-        <div className="relative mx-auto max-w-4xl text-center">
-          <span className="inline-flex animate-fade-up items-center gap-2 rounded-full border border-gold-400/30 bg-white/80 px-4 py-1.5 text-sm font-medium text-gold-600 shadow-sm">
-            <Sparkles className="h-4 w-4" />
-            Premium to&apos;yxona platformasi
-          </span>
-          <h1 className="mt-6 animate-fade-up font-display text-4xl font-extrabold tracking-tight text-stone-800 sm:text-6xl [animation-delay:100ms]">
-            Orzuingizdagi to&apos;yxonani{' '}
-            <span className="bg-gradient-to-r from-gold-500 via-gold-400 to-blush-400 bg-clip-text text-transparent">
-              bir joyda
-            </span>{' '}
-            toping
-          </h1>
-          <p className="mx-auto mt-6 max-w-2xl animate-fade-up text-lg text-stone-600 [animation-delay:200ms]">
-            O&apos;zbekiston bo&apos;ylab tasdiqlangan premium to&apos;yxonalar. Qulay qidiruv,
-            onlayn bron va shaffof narxlar.
-          </p>
-          <div className="mt-10 flex animate-fade-up flex-wrap items-center justify-center gap-4 [animation-delay:300ms]">
-            <Link to="/venues">
-              <Button size="lg">
-                <Search className="h-5 w-5" />
-                To&apos;yxonalarni ko&apos;rish
-              </Button>
-            </Link>
-            <Link to="/register">
-              <Button variant="outline" size="lg">
-                Bepul ro&apos;yxatdan o&apos;tish
-                <ArrowRight className="h-5 w-5" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
+      {/* Hero */}
+      <section className="hero-gradient overflow-hidden">
+        <div className="page-container py-16 lg:py-24">
+          <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+            <div className="animate-fade-up">
+              <span className="inline-flex items-center gap-2 rounded-full border border-rose-400/30 bg-surface px-4 py-1.5 text-sm font-medium text-rose-600 shadow-sm">
+                <Sparkles className="h-4 w-4" aria-hidden="true" />
+                Premium to&apos;yxona platformasi
+              </span>
 
-      <section className="border-y border-gold-400/10 bg-white/60 py-14">
-        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-8 px-4 sm:grid-cols-3 sm:px-6">
-          {[
-            { icon: Shield, title: 'Tasdiqlangan', desc: "Har bir to'yxona admin tomonidan tekshiriladi" },
-            { icon: Heart, title: 'Premium dizayn', desc: "Zamonaviy va nafis to'yxonalar" },
-            { icon: Search, title: 'Qulay qidiruv', desc: "Tuman va narx bo'yicha filter" },
-          ].map(({ icon: Icon, title, desc }) => (
-            <div key={title} className="text-center">
-              <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-400/10">
-                <Icon className="h-6 w-6 text-gold-600" />
+              <h1 className="mt-6 font-display text-4xl font-semibold leading-[1.15] tracking-tight text-gray-900 sm:text-5xl lg:text-[3.25rem]">
+                Hayotingizning eng go&apos;zal kunini{' '}
+                <span className="text-rose-500">mukammal joyda</span> nishonlang
+              </h1>
+
+              <p className="mt-6 max-w-lg text-lg leading-relaxed text-gray-600">
+                O&apos;zbekiston bo&apos;ylab tasdiqlangan premium to&apos;yxonalar. Qulay qidiruv,
+                onlayn bron va shaffof narxlar — barchasi bir joyda.
+              </p>
+
+              <div className="mt-8 flex flex-wrap gap-4">
+                <Link to="/venues">
+                  <Button size="lg">
+                    <Search className="h-5 w-5" />
+                    To&apos;yxonalarni ko&apos;rish
+                  </Button>
+                </Link>
+                <Link to="/register">
+                  <Button variant="outline" size="lg">
+                    Bepul ro&apos;yxatdan o&apos;tish
+                    <ArrowRight className="h-5 w-5" />
+                  </Button>
+                </Link>
               </div>
-              <h3 className="font-display font-semibold text-stone-800">{title}</h3>
-              <p className="mt-1 text-sm text-stone-500">{desc}</p>
+
+              <div className="mt-10 flex flex-wrap items-center gap-6 text-sm text-gray-500">
+                <span className="flex items-center gap-1.5">
+                  <Star className="h-4 w-4 fill-gold-400 text-gold-500" />
+                  24+ premium to&apos;yxona
+                </span>
+                <span className="flex items-center gap-1.5">
+                  <Shield className="h-4 w-4 text-rose-500" />
+                  Tasdiqlangan joylar
+                </span>
+              </div>
             </div>
-          ))}
+
+            <div className="relative animate-fade-up [animation-delay:150ms]">
+              <div className="relative mx-auto max-w-lg lg:max-w-none">
+                <div className="absolute -left-4 -top-4 h-full w-full rounded-3xl border border-rose-400/20 bg-rose-400/5" />
+                <div className="relative overflow-hidden rounded-3xl border border-border shadow-xl shadow-gray-900/10">
+                  <img
+                    src={HERO_IMAGE}
+                    alt="Kelin va kuyov — premium to'y"
+                    className="aspect-[4/5] w-full object-cover sm:aspect-[5/6]"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900/30 via-transparent to-transparent" />
+                </div>
+                <div className="absolute -bottom-5 -left-5 rounded-2xl border border-border bg-surface px-5 py-4 shadow-lg shadow-gray-900/10">
+                  <p className="font-display text-2xl font-semibold text-gray-900">500+</p>
+                  <p className="text-sm text-gray-500">Muvaffaqiyatli to&apos;y</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-4 py-16 sm:px-6">
-        <div className="mb-10 flex items-end justify-between">
-          <div>
-            <h2 className="font-display text-2xl font-bold text-stone-800">Mashhur to&apos;yxonalar</h2>
-            <p className="mt-1 text-stone-500">Eng ko&apos;p tanlangan joylar</p>
+      {/* Features */}
+      <section className="border-y border-border bg-surface py-16">
+        <div className="page-container">
+          <div className="grid gap-10 sm:grid-cols-3">
+            {[
+              { icon: Shield, title: 'Tasdiqlangan', desc: "Har bir to'yxona admin tomonidan tekshiriladi" },
+              { icon: Heart, title: 'Premium dizayn', desc: "Zamonaviy va nafis to'yxonalar" },
+              { icon: Search, title: 'Qulay qidiruv', desc: "Tuman va narx bo'yicha filter" },
+            ].map(({ icon: Icon, title, desc }) => (
+              <div key={title} className="text-center">
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-cream-100 shadow-sm">
+                  <Icon className="h-6 w-6 text-rose-500" aria-hidden="true" />
+                </div>
+                <h3 className="font-display text-xl font-semibold text-gray-900">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-gray-500">{desc}</p>
+              </div>
+            ))}
           </div>
-          <Link to="/venues" className="text-sm font-medium text-gold-600 hover:text-gold-500">
-            Barchasini ko&apos;rish →
+        </div>
+      </section>
+
+      {/* Venues */}
+      <section className="page-container py-16 lg:py-20">
+        <div className="mb-10 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 className="heading-display text-2xl sm:text-3xl">Mashhur to&apos;yxonalar</h2>
+            <p className="mt-2 text-gray-500">Eng ko&apos;p tanlangan premium joylar</p>
+          </div>
+          <Link
+            to="/venues"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-rose-600 transition-colors hover:text-rose-500"
+          >
+            Barchasini ko&apos;rish
+            <ArrowRight className="h-4 w-4" />
           </Link>
         </div>
+
         {loading ? (
-          <Spinner />
+          <VenueGridSkeleton count={6} />
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {venues.map((v) => (
@@ -97,6 +139,30 @@ export function HomePage() {
             ))}
           </div>
         )}
+      </section>
+
+      {/* CTA */}
+      <section className="page-container pb-20">
+        <div className="rounded-3xl border border-border bg-gray-900 px-8 py-14 text-center sm:px-12">
+          <h2 className="font-display text-3xl font-semibold text-white sm:text-4xl">
+            To&apos;yingiz uchun ideal joyni toping
+          </h2>
+          <p className="mx-auto mt-4 max-w-lg text-gray-400">
+            Hoziroq ro&apos;yxatdan o&apos;ting va eng yaxshi to&apos;yxonalarni qidiring.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <Link to="/venues">
+              <Button size="lg" className="bg-white text-gray-900 hover:bg-cream-100">
+                To&apos;yxonalarni ko&apos;rish
+              </Button>
+            </Link>
+            <Link to="/register">
+              <Button variant="outline" size="lg" className="border-white/30 text-white hover:bg-white/10">
+                Ro&apos;yxatdan o&apos;tish
+              </Button>
+            </Link>
+          </div>
+        </div>
       </section>
     </>
   );

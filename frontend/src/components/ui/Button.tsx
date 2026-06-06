@@ -11,11 +11,13 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants: Record<Variant, string> = {
   primary:
-    'bg-gradient-to-r from-gold-500 to-gold-400 text-white shadow-lg shadow-gold-500/25 hover:from-gold-400 hover:to-gold-300',
-  secondary: 'glass text-stone-700 hover:bg-cream-100',
-  ghost: 'text-stone-600 hover:bg-cream-100 hover:text-stone-900',
-  danger: 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100',
-  outline: 'border border-gold-400/40 text-stone-700 hover:border-gold-500 hover:bg-cream-50',
+    'bg-gray-900 text-white shadow-md shadow-gray-900/15 hover:bg-gray-800 active:bg-gray-950',
+  secondary:
+    'border border-border bg-surface text-gray-700 shadow-sm hover:border-border-strong hover:bg-cream-100',
+  ghost: 'text-gray-600 hover:bg-cream-200 hover:text-gray-900',
+  danger: 'border border-red-200 bg-red-50 text-red-700 hover:bg-red-100',
+  outline:
+    'border border-rose-400/50 bg-transparent text-gray-800 hover:border-rose-500 hover:bg-rose-400/5',
 };
 
 const sizes: Record<Size, string> = {
@@ -40,7 +42,7 @@ export function Button({
       {...props}
     >
       {loading && (
-        <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+        <span className="h-4 w-4 animate-spin rounded-full border-2 border-current/30 border-t-current" />
       )}
       {children}
     </button>

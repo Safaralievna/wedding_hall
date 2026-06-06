@@ -72,49 +72,51 @@ export function VenueCalendar({
   }, [year, month, dayMap]);
 
   const statusStyles: Record<string, string> = {
-    free: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30 hover:bg-emerald-500/30',
-    booked: 'bg-red-500/20 text-red-300 border-red-500/30 cursor-not-allowed',
-    past: 'bg-slate-700/30 text-slate-500 border-transparent cursor-not-allowed',
+    free: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100',
+    booked: 'bg-red-50 text-red-700 border-red-200 cursor-not-allowed',
+    past: 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed',
   };
 
   const legend = (
-    <div className="mt-4 flex flex-wrap gap-4 text-xs text-slate-400">
+    <div className="mt-4 flex flex-wrap gap-4 text-xs text-gray-500">
       <span className="flex items-center gap-1.5">
-        <span className="h-3 w-3 rounded bg-emerald-500/40" /> Bo&apos;sh
+        <span className="h-3 w-3 rounded border border-emerald-200 bg-emerald-50" /> Bo&apos;sh
       </span>
       <span className="flex items-center gap-1.5">
-        <span className="h-3 w-3 rounded bg-red-500/40" /> Band
+        <span className="h-3 w-3 rounded border border-red-200 bg-red-50" /> Band
       </span>
       <span className="flex items-center gap-1.5">
-        <span className="h-3 w-3 rounded bg-slate-600/40" /> O&apos;tgan
+        <span className="h-3 w-3 rounded border border-gray-200 bg-gray-100" /> O&apos;tgan
       </span>
     </div>
   );
 
   return (
-    <div className="glass rounded-2xl p-5">
+    <div className="surface-card p-5">
       <div className="mb-4 flex items-center justify-between">
-        <h3 className="font-semibold text-white">
+        <h3 className="font-semibold text-gray-900">
           {MONTHS_UZ[month]} {year}
         </h3>
         <div className="flex gap-1">
           <button
             type="button"
             onClick={() => setCursor(new Date(year, month - 1, 1))}
-            className="rounded-lg p-2 text-slate-400 hover:bg-white/10 hover:text-white"
+            className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-cream-200 hover:text-gray-900"
+            aria-label="Oldingi oy"
           >
             <ChevronLeft className="h-4 w-4" />
           </button>
           <button
             type="button"
             onClick={() => setCursor(new Date(year, month + 1, 1))}
-            className="rounded-lg p-2 text-slate-400 hover:bg-white/10 hover:text-white"
+            className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-cream-200 hover:text-gray-900"
+            aria-label="Keyingi oy"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
         </div>
       </div>
-      <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-slate-500">
+      <div className="grid grid-cols-7 gap-1 text-center text-xs font-medium text-gray-500">
         {WEEKDAYS.map((w) => (
           <div key={w} className="py-2">
             {w}
@@ -137,7 +139,7 @@ export function VenueCalendar({
               disabled={!canSelect && mode === 'select'}
               onClick={() => canSelect && cell.date && onSelectDate?.(cell.date)}
               className={`aspect-square rounded-lg border text-sm font-medium transition-all ${statusStyles[status]} ${
-                isSelected ? 'ring-2 ring-brand-400 ring-offset-2 ring-offset-surface-900' : ''
+                isSelected ? 'ring-2 ring-rose-400 ring-offset-2 ring-offset-cream-50' : ''
               } ${canSelect ? 'cursor-pointer' : ''}`}
             >
               {new Date(cell.date).getDate()}

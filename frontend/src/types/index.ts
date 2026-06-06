@@ -25,6 +25,7 @@ export interface VenueImage {
 export interface Venue {
   id: number;
   name: string;
+  description?: string | null;
   district_id: number;
   district_name: string;
   address: string;

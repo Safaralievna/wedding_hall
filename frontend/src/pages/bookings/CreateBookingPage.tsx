@@ -114,15 +114,14 @@ export function CreateBookingPage() {
   if (loading) return <Spinner />;
   if (!venue) return null;
 
-  const selectClass =
-    'w-full rounded-xl border border-gold-400/20 bg-white px-4 py-2.5 text-sm text-stone-800 focus:outline-none focus:ring-2 focus:ring-gold-400/40';
+  const selectClass = 'select-field w-full';
 
   return (
     <div className="mx-auto max-w-3xl">
       <PageHeader title="Bron qilish" subtitle={venue.name} />
       <div className="grid gap-8 lg:grid-cols-2">
         <div>
-          <p className="mb-3 text-sm font-medium text-stone-600">Bo&apos;sh kunni tanlang</p>
+          <p className="mb-3 text-sm font-medium text-gray-600">Bo&apos;sh kunni tanlang</p>
           <VenueCalendar
             venueId={venue.id}
             mode="select"
@@ -130,7 +129,7 @@ export function CreateBookingPage() {
             onSelectDate={setEventDate}
           />
           {eventDate && (
-            <p className="mt-2 text-sm text-gold-600">
+            <p className="mt-2 text-sm font-medium text-rose-600">
               Tanlangan: {new Date(`${eventDate}T00:00:00`).toLocaleDateString('uz-UZ')}
             </p>
           )}
@@ -156,7 +155,7 @@ export function CreateBookingPage() {
           />
           {venue.singers?.length > 0 && (
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-stone-700">
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">
                 Artist (ixtiyoriy)
               </label>
               <select
@@ -175,7 +174,7 @@ export function CreateBookingPage() {
           )}
           {cars.length > 0 && (
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-stone-700">
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">
                 Mashina (ixtiyoriy)
               </label>
               <select value={selectedCar} onChange={(e) => setSelectedCar(e.target.value)} className={selectClass}>
@@ -190,7 +189,7 @@ export function CreateBookingPage() {
           )}
           {venue.menu_items?.length > 0 && (
             <div>
-              <label className="mb-1.5 block text-sm font-medium text-stone-700">
+              <label className="mb-1.5 block text-sm font-medium text-gray-700">
                 Taom paketi (ixtiyoriy)
               </label>
               <select value={selectedMenu} onChange={(e) => setSelectedMenu(e.target.value)} className={selectClass}>
@@ -204,20 +203,20 @@ export function CreateBookingPage() {
             </div>
           )}
           {venue.karnay_surnay?.available && (
-            <label className="flex items-center gap-2 text-sm text-stone-700">
+            <label className="flex items-center gap-2 text-sm text-gray-700">
               <input
                 type="checkbox"
                 checked={includeKarnay}
                 onChange={(e) => setIncludeKarnay(e.target.checked)}
-                className="rounded border-gold-400/40 text-gold-500 focus:ring-gold-400"
+                className="rounded border-border text-rose-500 focus:ring-rose-400"
               />
               Karnay-surnay ({formatPrice(venue.karnay_surnay.price)})
             </label>
           )}
           <div className="rounded-xl bg-cream-100 p-4 text-sm">
-            <p className="font-medium text-stone-600">Narx hisob-kitobi</p>
+            <p className="font-medium text-gray-700">Narx hisob-kitobi</p>
             {tableCount ? (
-              <div className="mt-2 space-y-1 text-stone-600">
+              <div className="mt-2 space-y-1 text-gray-600">
                 <div className="flex justify-between">
                   <span>
                     Stollar ({tableCount} × {formatPrice(venue.price)})
@@ -230,16 +229,16 @@ export function CreateBookingPage() {
                     <span>{formatPrice(extra.price)}</span>
                   </div>
                 ))}
-                <div className="mt-2 flex justify-between border-t border-gold-400/20 pt-2 text-base font-bold text-gold-600">
+                <div className="mt-2 flex justify-between border-t border-border pt-2 text-base font-bold text-gray-900">
                   <span>Jami</span>
                   <span>{formatPrice(priceBreakdown.totalPrice)}</span>
                 </div>
-                <p className="text-xs text-stone-500">
+                <p className="text-xs text-gray-500">
                   Oldindan to&apos;lov: {formatPrice(priceBreakdown.advancePaid)} (20%)
                 </p>
               </div>
             ) : (
-              <p className="mt-2 text-stone-400">Stollar sonini kiriting</p>
+              <p className="mt-2 text-gray-400">Stollar sonini kiriting</p>
             )}
           </div>
           <Button type="submit" className="w-full" disabled={!eventDate || !tableCount}>

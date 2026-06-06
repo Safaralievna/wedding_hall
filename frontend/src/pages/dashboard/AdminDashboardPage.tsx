@@ -36,19 +36,19 @@ export function AdminDashboardPage() {
             <StatCard label="Daromad" value={formatPrice(stats.revenue)} icon={DollarSign} accent="amber" />
           </div>
           <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <div className="glass rounded-2xl p-5">
-              <p className="text-sm text-slate-400">Kutilayotgan to'yxonalar</p>
-              <p className="mt-1 text-2xl font-bold text-amber-400">{stats.pendingVenues}</p>
+            <div className="surface-card p-5">
+              <p className="text-sm text-gray-500">Kutilayotgan to&apos;yxonalar</p>
+              <p className="mt-1 text-2xl font-bold text-amber-600">{stats.pendingVenues}</p>
             </div>
-            <div className="glass rounded-2xl p-5">
-              <p className="text-sm text-slate-400">Bekor qilingan bronlar</p>
-              <p className="mt-1 text-2xl font-bold text-slate-300">{stats.cancelledBookings}</p>
+            <div className="surface-card p-5">
+              <p className="text-sm text-gray-500">Bekor qilingan bronlar</p>
+              <p className="mt-1 text-2xl font-bold text-gray-700">{stats.cancelledBookings}</p>
             </div>
           </div>
         </>
       )}
       <div className="mt-8 flex flex-wrap gap-3">
-        <Link to="/admin/venues"><Button variant="secondary">To'yxonalar</Button></Link>
+        <Link to="/admin/venues"><Button variant="secondary">To&apos;yxonalar</Button></Link>
         <Link to="/admin/bookings"><Button variant="secondary">Bronlar</Button></Link>
         <Link to="/admin/owners"><Button variant="outline">Egalari</Button></Link>
       </div>

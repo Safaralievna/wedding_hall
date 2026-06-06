@@ -68,9 +68,9 @@ export function OwnerRegisterPage() {
   if (step === 'otp') {
     return (
       <div>
-        <h1 className="text-2xl font-bold text-white">OTP tasdiqlash</h1>
-        <p className="mt-2 text-slate-400">
-          <span className="text-brand-400">@{username}</span> uchun 6 xonali kodni kiriting
+        <h1 className="heading-display text-2xl">OTP tasdiqlash</h1>
+        <p className="mt-2 text-gray-500">
+          <span className="font-semibold text-rose-600">@{username}</span> uchun 6 xonali kodni kiriting
         </p>
         <form onSubmit={handleVerify} className="mt-8 space-y-5">
           <Input
@@ -94,8 +94,8 @@ export function OwnerRegisterPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-white">Owner ro'yxati</h1>
-      <p className="mt-2 text-slate-400">To'yxona egasi sifatida ro'yxatdan o'ting</p>
+      <h1 className="heading-display text-2xl">Owner ro&apos;yxati</h1>
+      <p className="mt-2 text-gray-500">To&apos;yxona egasi sifatida ro&apos;yxatdan o&apos;ting</p>
       <form onSubmit={handleRegister} className="mt-8 space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <Input
@@ -136,8 +136,8 @@ export function OwnerRegisterPage() {
           Davom etish
         </Button>
       </form>
-      <p className="mt-6 text-center text-sm text-slate-400">
-        <Link to="/login" className="text-brand-400 hover:text-brand-300">
+      <p className="mt-6 text-center text-sm text-gray-500">
+        <Link to="/login" className="font-semibold text-rose-600 hover:text-rose-500 transition-colors">
           Kirish sahifasiga
         </Link>
       </p>

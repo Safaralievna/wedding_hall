@@ -56,40 +56,41 @@ export function PaymentModal({ open, totalPrice, advancePaid, onClose, onPay }: 
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-labelledby="payment-title">
       <button
         type="button"
-        className="absolute inset-0 bg-stone-900/40 backdrop-blur-sm"
+        className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm"
         onClick={onClose}
         aria-label="Yopish"
       />
-      <div className="relative w-full max-w-md animate-fade-up rounded-3xl border border-gold-400/30 bg-white p-6 shadow-2xl shadow-gold-500/10">
+      <div className="relative w-full max-w-md animate-fade-up surface-card-elevated p-6">
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 rounded-lg p-1 text-stone-400 hover:bg-cream-100 hover:text-stone-700"
+          className="absolute right-4 top-4 rounded-lg p-1 text-gray-400 transition-colors hover:bg-cream-200 hover:text-gray-700"
+          aria-label="Yopish"
         >
           <X className="h-5 w-5" />
         </button>
 
         <div className="mb-6 flex items-center gap-3">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gold-400/15">
-            <CreditCard className="h-6 w-6 text-gold-600" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-rose-200 bg-rose-50">
+            <CreditCard className="h-6 w-6 text-rose-600" aria-hidden="true" />
           </div>
           <div>
-            <h2 className="font-display text-xl font-bold text-stone-800">To&apos;lov</h2>
-            <p className="text-sm text-stone-500">Demo to&apos;lov tizimi</p>
+            <h2 id="payment-title" className="font-display text-xl font-semibold text-gray-900">To&apos;lov</h2>
+            <p className="text-sm text-gray-500">Demo to&apos;lov tizimi</p>
           </div>
         </div>
 
-        <div className="mb-6 rounded-2xl bg-cream-100 p-4">
-          <div className="flex justify-between text-sm text-stone-600">
+        <div className="mb-6 rounded-2xl border border-border bg-cream-100 p-4">
+          <div className="flex justify-between text-sm text-gray-600">
             <span>Jami summa</span>
-            <span className="font-semibold text-stone-800">{formatPrice(totalPrice)}</span>
+            <span className="font-semibold text-gray-900">{formatPrice(totalPrice)}</span>
           </div>
-          <div className="mt-2 flex justify-between text-sm text-stone-600">
+          <div className="mt-2 flex justify-between text-sm text-gray-600">
             <span>Oldindan to&apos;lov (20%)</span>
-            <span className="font-semibold text-gold-600">{formatPrice(advancePaid)}</span>
+            <span className="font-semibold text-rose-600">{formatPrice(advancePaid)}</span>
           </div>
         </div>
 
@@ -128,11 +129,11 @@ export function PaymentModal({ open, totalPrice, advancePaid, onClose, onPay }: 
         </div>
 
         <Button type="button" className="mt-6 w-full" size="lg" loading={loading} onClick={handlePay}>
-          <Lock className="h-4 w-4" />
+          <Lock className="h-4 w-4" aria-hidden="true" />
           Pay Now
         </Button>
 
-        <p className="mt-3 text-center text-xs text-stone-400">
+        <p className="mt-3 text-center text-xs text-gray-400">
           Bu demo tizim. Haqiqiy pul yechilmaydi.
         </p>
       </div>

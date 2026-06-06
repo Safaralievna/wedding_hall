@@ -42,8 +42,8 @@ export function RegisterPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-white">Ro'yxatdan o'tish</h1>
-      <p className="mt-2 text-slate-400">Yangi foydalanuvchi hisobi yarating</p>
+      <h1 className="heading-display text-2xl">Ro&apos;yxatdan o&apos;tish</h1>
+      <p className="mt-2 text-gray-500">Yangi foydalanuvchi hisobi yarating</p>
       <form onSubmit={handleSubmit} className="mt-8 space-y-4">
         <div className="grid gap-4 sm:grid-cols-2">
           <Input
@@ -51,12 +51,14 @@ export function RegisterPage() {
             value={form.firstName}
             onChange={(e) => setForm({ ...form, firstName: e.target.value })}
             required
+            autoComplete="given-name"
           />
           <Input
             label="Familiya"
             value={form.lastName}
             onChange={(e) => setForm({ ...form, lastName: e.target.value })}
             required
+            autoComplete="family-name"
           />
         </div>
         <Input
@@ -65,6 +67,7 @@ export function RegisterPage() {
           onChange={(e) => setForm({ ...form, phone: e.target.value })}
           hint="+998XXXXXXXXX"
           required
+          autoComplete="tel"
         />
         <Input
           label="Parol"
@@ -73,6 +76,7 @@ export function RegisterPage() {
           onChange={(e) => setForm({ ...form, password: e.target.value })}
           hint="Kamida 8 belgi, katta/kichik harf va raqam"
           required
+          autoComplete="new-password"
         />
         <Input
           label="Parolni tasdiqlang"
@@ -80,14 +84,15 @@ export function RegisterPage() {
           value={form.confirm}
           onChange={(e) => setForm({ ...form, confirm: e.target.value })}
           required
+          autoComplete="new-password"
         />
         <Button type="submit" className="w-full" size="lg" loading={loading}>
           Yaratish
         </Button>
       </form>
-      <p className="mt-6 text-center text-sm text-slate-400">
+      <p className="mt-6 text-center text-sm text-gray-500">
         Hisobingiz bormi?{' '}
-        <Link to="/login" className="text-brand-400 hover:text-brand-300">
+        <Link to="/login" className="font-semibold text-rose-600 hover:text-rose-500 transition-colors">
           Kirish
         </Link>
       </p>

@@ -49,35 +49,35 @@ export function BookingDetailPage() {
   return (
     <div className="mx-auto max-w-2xl">
       <PageHeader title="Bron tafsilotlari" />
-      <div className="glass space-y-6 rounded-2xl p-6">
+      <div className="surface-card space-y-6 p-6">
         <div className="flex items-start justify-between">
           <div>
-            <h2 className="font-display text-xl font-bold text-stone-800">{booking.venue_name}</h2>
-            <p className="text-stone-500">{booking.district_name}</p>
+            <h2 className="font-display text-xl font-semibold text-gray-900">{booking.venue_name}</h2>
+            <p className="text-gray-500">{booking.district_name}</p>
           </div>
           <Badge status={booking.status} />
         </div>
         <dl className="grid gap-4 sm:grid-cols-2">
           <div>
-            <dt className="text-xs text-stone-500">Sana</dt>
-            <dd className="font-medium text-stone-800">{formatDate(booking.event_date)}</dd>
+            <dt className="text-xs font-medium text-gray-500">Sana</dt>
+            <dd className="font-semibold text-gray-900">{formatDate(booking.event_date)}</dd>
           </div>
           <div>
-            <dt className="text-xs text-stone-500">Stollar soni</dt>
-            <dd className="font-medium text-stone-800">{booking.guest_count}</dd>
+            <dt className="text-xs font-medium text-gray-500">Stollar soni</dt>
+            <dd className="font-semibold text-gray-900">{booking.guest_count}</dd>
           </div>
           <div>
-            <dt className="text-xs text-stone-500">Jami summa</dt>
-            <dd className="font-medium text-gold-600">{formatPrice(booking.total_price)}</dd>
+            <dt className="text-xs font-medium text-gray-500">Jami summa</dt>
+            <dd className="font-semibold text-rose-600">{formatPrice(booking.total_price)}</dd>
           </div>
           <div>
-            <dt className="text-xs text-stone-500">Oldindan to&apos;lov (20%)</dt>
-            <dd className="font-medium text-stone-800">{formatPrice(booking.advance_paid)}</dd>
+            <dt className="text-xs font-medium text-gray-500">Oldindan to&apos;lov (20%)</dt>
+            <dd className="font-semibold text-gray-900">{formatPrice(booking.advance_paid)}</dd>
           </div>
           {booking.first_name && (
             <div className="sm:col-span-2">
-              <dt className="text-xs text-slate-500">Mijoz</dt>
-              <dd className="font-medium text-white">
+              <dt className="text-xs font-medium text-gray-500">Mijoz</dt>
+              <dd className="font-semibold text-gray-900">
                 {fullName(booking.first_name, booking.last_name)} · {booking.phone}
               </dd>
             </div>
@@ -85,12 +85,12 @@ export function BookingDetailPage() {
         </dl>
         {booking.extras && booking.extras.length > 0 && (
           <div>
-            <h3 className="mb-2 text-sm font-medium text-slate-400">Qo'shimcha xizmatlar</h3>
+            <h3 className="mb-2 text-sm font-medium text-gray-500">Qo&apos;shimcha xizmatlar</h3>
             <ul className="space-y-1 text-sm">
               {booking.extras.map((e) => (
-                <li key={e.id} className="flex justify-between text-slate-300">
+                <li key={e.id} className="flex justify-between text-gray-700">
                   <span className="capitalize">{e.extra_type}</span>
-                  <span>{formatPrice(e.price)}</span>
+                  <span className="font-medium">{formatPrice(e.price)}</span>
                 </li>
               ))}
             </ul>

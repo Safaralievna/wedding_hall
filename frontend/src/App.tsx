@@ -10,7 +10,7 @@ function App() {
       <Toaster
         position="top-right"
         toastOptions={{
-          className: 'glass !bg-white !text-stone-800 !border !border-gold-400/20',
+          className: '!bg-white !text-gray-800 !border !border-border !shadow-lg',
           duration: 4000,
         }}
       />
