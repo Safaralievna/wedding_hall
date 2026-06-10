@@ -2,6 +2,14 @@ const pool = require("../config/db");
 const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
 
+const DEFAULT_VENUE_IMAGES = [
+  "https://media.weddingz.in/images/16ab8276a8bfa26550f679e8e6963687/best-wedding-reception-halls-in-patna-you-will-absolutely-fall-in-love-with.jpg",
+  "https://www.wedding-spot.com/blog/sites/wsblog/files/styles/webp_desktop/public/images/migrated/78-Fitroy%2Bwedding%2Bvenue.jpg.webp?itok=vg-DX6bK",
+  "https://www.koronakarkonoszy.pl/blog/wp-content/uploads/2021/07/sala_balowa_vintage-1.jpg.webp",
+  "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80",
+  "https://3.imimg.com/data3/BE/ER/MY-12637145/images-ic-500x500.jpg",
+];
+
 const venueSelectBase = `
   SELECT
     v.id,
@@ -29,6 +37,27 @@ const venueSelectBase = `
   JOIN districts d ON d.id = v.district_id
   LEFT JOIN venue_images vi ON vi.venue_id = v.id
 `;
+
+const isUploadUrl = (url) => typeof url === 'string' && url.includes('/uploads/');
+
+const getDefaultVenueImages = (venueId) => {
+  const imageCount = 2;
+  return Array.from({ length: imageCount }, (_, index) => ({
+    id: null,
+    url: DEFAULT_VENUE_IMAGES[(venueId + index) % DEFAULT_VENUE_IMAGES.length],
+    is_primary: index === 0,
+  }));
+};
+
+const attachDefaultImages = (venue) => {
+  const images = Array.isArray(venue.images) ? venue.images : [];
+  const hasValidExternal = images.some((img) => img && typeof img.url === 'string' && img.url.trim() && !isUploadUrl(img.url));
+
+  return {
+    ...venue,
+    images: hasValidExternal ? images : getDefaultVenueImages(venue.id),
+  };
+};
 
 const buildVenueFilters = (query) => {
   const values = [];
@@ -82,7 +111,8 @@ const getVenues = asyncHandler(async (req, res) => {
   `;
 
   const result = await pool.query(sql, values);
-  res.json(result.rows);
+  const venues = result.rows.map(attachDefaultImages);
+  res.json(venues);
 });
 
 const getAdminVenues = asyncHandler(async (req, res) => {
@@ -98,7 +128,8 @@ const getAdminVenues = asyncHandler(async (req, res) => {
   `;
 
   const result = await pool.query(sql, values);
-  res.json(result.rows);
+  const venues = result.rows.map(attachDefaultImages);
+  res.json(venues);
 });
 
 const getOwnerVenues = asyncHandler(async (req, res) => {
@@ -117,7 +148,8 @@ const getOwnerVenues = asyncHandler(async (req, res) => {
   values.push(ownerId);
 
   const result = await pool.query(sql, values);
-  res.json(result.rows);
+  const venues = result.rows.map(attachDefaultImages);
+  res.json(venues);
 });
 
 const getVenueById = asyncHandler(async (req, res) => {
@@ -133,10 +165,12 @@ const getVenueById = asyncHandler(async (req, res) => {
     [id]
   );
 
-  const venue = result.rows[0];
-  if (!venue) {
+  const venueRow = result.rows[0];
+  if (!venueRow) {
     throw new ApiError(404, "To'yxona topilmadi");
   }
+
+  const venue = attachDefaultImages(venueRow);
 
   const [singers, car, menuItems, bookings] = await Promise.all([
     pool.query("SELECT id, name, price, image FROM singers WHERE venue_id = $1 ORDER BY id DESC", [id]),
