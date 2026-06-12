@@ -130,7 +130,8 @@ const createOwner = asyncHandler(async (req, res) => {
   res.status(201).json({
     message: "Owner yaratildi. OTP yuborildi",
     user: userResult.rows[0],
-    devOtp: process.env.NODE_ENV !== "production" ? otp : undefined,
+    otp,
+    devOtp: otp,
   });
 });
 
@@ -169,7 +170,8 @@ const resendOwnerOtp = asyncHandler(async (req, res) => {
 
   res.json({
     message: "OTP qayta yuborildi",
-    devOtp: process.env.NODE_ENV !== "production" ? otp : undefined,
+    otp,
+    devOtp: otp,
   });
 });
 

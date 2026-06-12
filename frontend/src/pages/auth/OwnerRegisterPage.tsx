@@ -28,8 +28,9 @@ export function OwnerRegisterPage() {
     try {
       const { data } = await authService.createOwner(form);
       setUsername(form.username);
-      if (data.devOtp) {
-        const message = `Dev OTP: ${data.devOtp}`;
+      const otpCode = data.devOtp ?? data.otp;
+      if (otpCode) {
+        const message = `Dev OTP: ${otpCode}`;
         setOtpMessage(message);
         toast.success(message, { duration: 10000 });
       } else {
@@ -63,8 +64,9 @@ export function OwnerRegisterPage() {
   const handleResend = async () => {
     try {
       const { data } = await authService.resendOwnerOtp(username);
-      if (data.devOtp) {
-        const message = `Dev OTP: ${data.devOtp}`;
+      const otpCode = data.devOtp ?? data.otp;
+      if (otpCode) {
+        const message = `Dev OTP: ${otpCode}`;
         setOtpMessage(message);
         toast.success(message, { duration: 10000 });
       } else {

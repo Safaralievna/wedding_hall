@@ -30,7 +30,7 @@ export const authService = {
     api.post<{ token: string; user: User; message: string }>('/auth/register', data),
 
   createOwner: (data: CreateOwnerPayload) =>
-    api.post<{ user: User; message: string; devOtp?: string }>('/auth/owners', data),
+    api.post<{ user: User; message: string; otp?: string; devOtp?: string }>('/auth/owners', data),
 
   verifyOwnerOtp: (username: string, otp: string) =>
     api.post<{ token: string; user: User; message: string }>('/auth/owners/verify-otp', {
@@ -39,7 +39,7 @@ export const authService = {
     }),
 
   resendOwnerOtp: (username: string) =>
-    api.post<{ message: string; devOtp?: string }>('/auth/owners/resend-otp', { username }),
+    api.post<{ message: string; otp?: string; devOtp?: string }>('/auth/owners/resend-otp', { username }),
 
   getOwners: () => api.get<User[]>('/auth/owners'),
 };
