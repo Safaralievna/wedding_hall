@@ -8,20 +8,11 @@ const path = require("path");
 const pool = require("../src/config/db");
 const { hashPassword } = require("../src/utils/password");
 
-// const WEDDING_IMAGES = [
-//   "https://images.unsplash.com/photo-1519167758481-83f29da1b5c5?w=800&q=80",
-//   "https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?w=800&q=80",
-//   "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=800&q=80",
-//   "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80",
-//   "https://images.unsplash.com/photo-1522673607210-8f3d141e7371?w=800&q=80",
-//   "https://images.unsplash.com/photo-1469371670804-ccaeda6e9e68?w=800&q=80",
-// ];
-
 const WEDDING_IMAGES = [
   "https://media.weddingz.in/images/16ab8276a8bfa26550f679e8e6963687/best-wedding-reception-halls-in-patna-you-will-absolutely-fall-in-love-with.jpg",
   "https://www.wedding-spot.com/blog/sites/wsblog/files/styles/webp_desktop/public/images/migrated/78-Fitroy%2Bwedding%2Bvenue.jpg.webp?itok=vg-DX6bK",
   "https://www.koronakarkonoszy.pl/blog/wp-content/uploads/2021/07/sala_balowa_vintage-1.jpg.webp",
-  "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?w=800&q=80",
+  "https://www.marriagecolours.com/wp-content/uploads/2024/10/city-wedding-reception-taj-coromandel.jpg",
   "https://3.imimg.com/data3/BE/ER/MY-12637145/images-ic-500x500.jpg",
 ];
 

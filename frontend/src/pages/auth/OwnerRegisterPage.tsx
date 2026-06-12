@@ -20,6 +20,7 @@ export function OwnerRegisterPage() {
     password: '',
   });
   const [loading, setLoading] = useState(false);
+  const [otpMessage, setOtpMessage] = useState<string | null>(null);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,9 +29,13 @@ export function OwnerRegisterPage() {
       const { data } = await authService.createOwner(form);
       setUsername(form.username);
       if (data.devOtp) {
-        toast.success(`Dev OTP: ${data.devOtp}`, { duration: 10000 });
+        const message = `Dev OTP: ${data.devOtp}`;
+        setOtpMessage(message);
+        toast.success(message, { duration: 10000 });
       } else {
-        toast.success('OTP emailingizga yuborildi');
+        const message = 'OTP emailingizga yuborildi';
+        setOtpMessage(message);
+        toast.success(message);
       }
       setStep('otp');
     } catch (err) {
@@ -58,8 +63,15 @@ export function OwnerRegisterPage() {
   const handleResend = async () => {
     try {
       const { data } = await authService.resendOwnerOtp(username);
-      if (data.devOtp) toast.success(`Dev OTP: ${data.devOtp}`, { duration: 10000 });
-      else toast.success('OTP qayta yuborildi');
+      if (data.devOtp) {
+        const message = `Dev OTP: ${data.devOtp}`;
+        setOtpMessage(message);
+        toast.success(message, { duration: 10000 });
+      } else {
+        const message = 'OTP qayta yuborildi';
+        setOtpMessage(message);
+        toast.success(message);
+      }
     } catch (err) {
       toast.error(err instanceof Error ? err.message : 'Xatolik');
     }
@@ -72,6 +84,11 @@ export function OwnerRegisterPage() {
         <p className="mt-2 text-gray-500">
           <span className="font-semibold text-rose-600">@{username}</span> uchun 6 xonali kodni kiriting
         </p>
+        {otpMessage ? (
+          <div className="mt-4 rounded-lg border border-rose-100 bg-rose-50 p-4 text-sm text-rose-800">
+            {otpMessage}
+          </div>
+        ) : null}
         <form onSubmit={handleVerify} className="mt-8 space-y-5">
           <Input
             label="OTP kod"
