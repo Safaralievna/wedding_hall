@@ -198,10 +198,32 @@ Sana: ${formatDate(invitation.event_date)} ${invitation.wedding_time}`;
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(251,207,232,0.45),transparent_28%),radial-gradient(circle_at_bottom_right,rgba(248,159,177,0.28),transparent_32%)]" />
           <div className="pointer-events-none absolute left-10 top-10 h-36 w-36 rounded-full bg-rose-100/70 blur-3xl" />
           <div className="pointer-events-none absolute right-12 bottom-10 h-32 w-32 rounded-full bg-rose-200/70 blur-3xl" />
+          <div className="pointer-events-none absolute left-8 top-20 h-24 w-24 rounded-full bg-white/70 blur-2xl" />
+          <div className="pointer-events-none absolute right-8 top-24 h-20 w-20 rounded-full bg-white/70 blur-2xl" />
+          <div className="pointer-events-none absolute left-16 bottom-16 h-28 w-28 rounded-full bg-white/70 blur-2xl" />
+
           <div ref={sectionRef} className="relative rounded-[48px] border border-white bg-white/95 p-10 shadow-xl">
-            <div className="absolute left-0 top-0 h-24 w-24 rounded-full bg-rose-100/80 blur-3xl" />
-            <div className="absolute right-0 top-16 h-20 w-20 rounded-full bg-rose-200/70 blur-3xl" />
-            <div className="absolute left-8 bottom-10 h-20 w-20 rounded-full bg-rose-100/70 blur-3xl" />
+            <div className="absolute left-[-10px] top-[-10px] h-32 w-32 overflow-hidden">
+              <svg viewBox="0 0 120 120" className="h-full w-full opacity-90">
+                <circle cx="60" cy="60" r="34" fill="#f9d9dc" />
+                <path d="M60 10 C70 25, 90 25, 90 45 C90 65, 70 70, 60 90 C50 70, 30 65, 30 45 C30 25, 50 25, 60 10 Z" fill="#f7b5c2" />
+                <circle cx="60" cy="60" r="8" fill="#be6c79" />
+              </svg>
+            </div>
+            <div className="absolute right-[-8px] top-28 h-20 w-20 overflow-hidden">
+              <svg viewBox="0 0 120 120" className="h-full w-full opacity-90">
+                <circle cx="60" cy="60" r="26" fill="#fde4e8" />
+                <path d="M60 20 C68 35, 85 35, 85 50 C85 65, 68 70, 60 90 C52 70, 35 65, 35 50 C35 35, 52 35, 60 20 Z" fill="#fbb6c4" />
+                <circle cx="60" cy="60" r="6" fill="#c54765" />
+              </svg>
+            </div>
+            <div className="absolute left-8 bottom-[-10px] h-24 w-24 overflow-hidden">
+              <svg viewBox="0 0 120 120" className="h-full w-full opacity-90">
+                <circle cx="60" cy="60" r="28" fill="#ffe5e8" />
+                <path d="M60 15 C67 32, 88 35, 88 50 C88 65, 67 68, 60 90 C53 68, 32 65, 32 50 C32 35, 53 32, 60 15 Z" fill="#fb9eb1" />
+                <circle cx="60" cy="60" r="5" fill="#c33a55" />
+              </svg>
+            </div>
 
             <div className="mx-auto max-w-3xl text-center">
               <p className="text-xs uppercase tracking-[0.55em] text-rose-500">Taklifnoma</p>
