@@ -1,3 +1,4 @@
+const crypto = require("crypto");
 const pool = require("../config/db");
 const asyncHandler = require("../utils/asyncHandler");
 const ApiError = require("../utils/ApiError");
@@ -8,6 +9,16 @@ const isPastDate = (dateString) => {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   return inputDate < today;
+};
+
+const generateInvitationSlug = async () => {
+  while (true) {
+    const slug = crypto.randomBytes(8).toString("hex");
+    const existing = await pool.query(`SELECT id FROM bookings WHERE invitation_slug = $1 LIMIT 1`, [slug]);
+    if (!existing.rows.length) {
+      return slug;
+    }
+  }
 };
 
 const resolveExtraPrice = async (extra, venueId) => {
@@ -107,10 +118,18 @@ const getBookings = asyncHandler(async (req, res) => {
 });
 
 const createBooking = asyncHandler(async (req, res) => {
-  const { venueId, eventDate, guestCount, extras = [] } = req.body;
+  const {
+    venueId,
+    eventDate,
+    weddingTime,
+    brideName,
+    groomName,
+    guestCount,
+    extras = [],
+  } = req.body;
   const userId = req.user.id;
 
-  if (!venueId || !eventDate || !guestCount) {
+  if (!venueId || !eventDate || !weddingTime || !brideName || !groomName || !guestCount) {
     throw new ApiError(400, "Majburiy maydonlar to'liq emas");
   }
 
@@ -119,7 +138,7 @@ const createBooking = asyncHandler(async (req, res) => {
   }
 
   const venueResult = await pool.query(
-    `SELECT v.id, v.price, v.capacity, v.status FROM venues v WHERE v.id = $1 LIMIT 1`,
+    `SELECT v.id, v.name, v.address, v.price, v.capacity, v.status FROM venues v WHERE v.id = $1 LIMIT 1`,
     [venueId]
   );
 
@@ -152,6 +171,7 @@ const createBooking = asyncHandler(async (req, res) => {
     extraDetails.push(await resolveExtraPrice(extra, venueId));
   }
 
+  const invitationSlug = await generateInvitationSlug();
   const { totalPrice, advancePaid } = calculateBookingPrice(
     venue.price,
     guestCount,
@@ -163,10 +183,37 @@ const createBooking = asyncHandler(async (req, res) => {
     await client.query("BEGIN");
 
     const bookingResult = await client.query(
-      `INSERT INTO bookings (venue_id, user_id, event_date, guest_count, total_price, advance_paid, status)
-       VALUES ($1, $2, $3, $4, $5, $6, 'confirmed')
+      `INSERT INTO bookings (
+        venue_id,
+        user_id,
+        event_date,
+        wedding_time,
+        bride_name,
+        groom_name,
+        hall_name,
+        hall_address,
+        invitation_slug,
+        payment_status,
+        guest_count,
+        total_price,
+        advance_paid,
+        status
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'paid', $10, $11, $12, 'confirmed')
        RETURNING *`,
-      [venueId, userId, eventDate, guestCount, totalPrice, advancePaid]
+      [
+        venueId,
+        userId,
+        eventDate,
+        weddingTime,
+        brideName,
+        groomName,
+        venue.name,
+        venue.address,
+        invitationSlug,
+        guestCount,
+        totalPrice,
+        advancePaid,
+      ]
     );
 
     const booking = bookingResult.rows[0];
@@ -188,6 +235,7 @@ const createBooking = asyncHandler(async (req, res) => {
         totalPrice,
         advancePaid,
       },
+      invitationSlug,
     });
   } catch (error) {
     await client.query("ROLLBACK");
@@ -214,6 +262,13 @@ const getBookingById = asyncHandler(async (req, res) => {
       u.last_name,
       u.phone,
       b.event_date,
+      b.wedding_time,
+      b.bride_name,
+      b.groom_name,
+      b.hall_name,
+      b.hall_address,
+      b.invitation_slug,
+      b.payment_status,
       b.guest_count,
       b.total_price,
       b.advance_paid,

@@ -6,6 +6,7 @@ const districtRoutes = require("./routes/district.routes");
 const authRoutes = require("./routes/auth.routes");
 const venueRoutes = require("./routes/venue.routes");
 const bookingRoutes = require("./routes/booking.routes");
+const invitationRoutes = require("./routes/invitation.routes");
 const adminRoutes = require("./routes/admin.routes");
 const ownerRoutes = require("./routes/owner.routes");
 const { notFound } = require("./middlewares/notFound");
@@ -48,6 +49,7 @@ app.use("/api/districts", districtRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/venues", venueRoutes);
 app.use("/api/bookings", bookingRoutes);
+app.use("/api/invitations", invitationRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/owner", ownerRoutes);
 

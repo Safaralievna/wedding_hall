@@ -89,6 +89,13 @@ CREATE TABLE IF NOT EXISTS bookings (
   venue_id INTEGER NOT NULL REFERENCES venues(id) ON DELETE CASCADE,
   user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
   event_date DATE NOT NULL,
+  wedding_time TIME NOT NULL,
+  bride_name VARCHAR(150) NOT NULL,
+  groom_name VARCHAR(150) NOT NULL,
+  hall_name VARCHAR(200) NOT NULL,
+  hall_address VARCHAR(300) NOT NULL,
+  invitation_slug VARCHAR(100) UNIQUE,
+  payment_status VARCHAR(20) NOT NULL DEFAULT 'paid' CHECK (payment_status IN ('pending', 'paid', 'failed')),
   guest_count INTEGER NOT NULL CHECK (guest_count > 0),
   total_price NUMERIC(12, 2) NOT NULL,
   advance_paid NUMERIC(12, 2) NOT NULL DEFAULT 0,
@@ -113,6 +120,14 @@ CREATE INDEX IF NOT EXISTS idx_bookings_user ON bookings(user_id);
 -- Migration helpers for existing databases
 ALTER TABLE venues ADD COLUMN IF NOT EXISTS description TEXT;
 ALTER TABLE menu_items ADD COLUMN IF NOT EXISTS price NUMERIC(12, 2) NOT NULL DEFAULT 0;
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS wedding_time TIME NOT NULL DEFAULT '18:00';
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS bride_name VARCHAR(150) NOT NULL DEFAULT '';
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS groom_name VARCHAR(150) NOT NULL DEFAULT '';
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS hall_name VARCHAR(200) NOT NULL DEFAULT '';
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS hall_address VARCHAR(300) NOT NULL DEFAULT '';
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS invitation_slug VARCHAR(100);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bookings_invitation_slug ON bookings(invitation_slug) WHERE invitation_slug IS NOT NULL;
+ALTER TABLE bookings ADD COLUMN IF NOT EXISTS payment_status VARCHAR(20) NOT NULL DEFAULT 'paid';
 
 -- Legacy enum migrations (older DBs used PostgreSQL enums)
 DO $$

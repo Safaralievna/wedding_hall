@@ -10,6 +10,9 @@ export interface BookingFilters {
 export interface CreateBookingPayload {
   venueId: number;
   eventDate: string;
+  weddingTime: string;
+  brideName: string;
+  groomName: string;
   guestCount: number;
   extras?: Array<{ type: 'singer' | 'karnay' | 'car' | 'menu'; id: number }>;
 }
@@ -25,6 +28,7 @@ export const bookingService = {
       booking: BookingDetail;
       payment: { totalPrice: number; advancePaid: number };
       message: string;
+      invitationSlug?: string;
     }>('/bookings', data),
 
   cancel: (id: number) =>

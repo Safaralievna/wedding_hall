@@ -61,8 +61,12 @@ const validators = {
   },
   createBooking: (body) => {
     const errors = [];
+    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
     if (!isPositiveInteger(body.venueId)) errors.push("venueId noto'g'ri");
     if (!isString(body.eventDate)) errors.push("eventDate majburiy");
+    if (!isString(body.weddingTime) || !timeRegex.test(body.weddingTime)) errors.push("weddingTime MM:SS formatida majburiy");
+    if (!isString(body.brideName)) errors.push("brideName majburiy");
+    if (!isString(body.groomName)) errors.push("groomName majburiy");
     if (!isPositiveInteger(body.guestCount)) errors.push("guestCount musbat son bo'lishi kerak");
     return errors;
   },

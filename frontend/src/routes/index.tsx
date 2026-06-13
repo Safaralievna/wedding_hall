@@ -16,6 +16,7 @@ import { AdminDashboardPage } from '@/pages/dashboard/AdminDashboardPage';
 import { BookingsPage } from '@/pages/bookings/BookingsPage';
 import { BookingDetailPage } from '@/pages/bookings/BookingDetailPage';
 import { CreateBookingPage } from '@/pages/bookings/CreateBookingPage';
+import { InvitationPage } from '@/pages/invitation/InvitationPage';
 import { MyVenuesPage } from '@/pages/venues/MyVenuesPage';
 import { AdminVenuesPage } from '@/pages/admin/AdminVenuesPage';
 import { AdminOwnersPage } from '@/pages/admin/AdminOwnersPage';
@@ -28,6 +29,7 @@ export const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: 'venues', element: <VenuesPage /> },
       { path: 'venues/:id', element: <VenueDetailPage /> },
+      { path: 'invitation/:slug', element: <InvitationPage /> },
     ],
   },
   {
@@ -129,6 +131,10 @@ export const router = createBrowserRouter([
         ),
       },
     ],
+  },
+  {
+    element: <PublicLayout />,
+    children: [{ path: 'invitation/:slug', element: <InvitationPage /> }],
   },
   { path: '*', element: <Navigate to="/" replace /> },
 ]);

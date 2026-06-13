@@ -93,12 +93,38 @@ export interface Booking {
 
 export interface BookingDetail extends Booking {
   user_id?: number;
+  bride_name?: string;
+  groom_name?: string;
+  wedding_time?: string;
+  hall_name?: string;
+  hall_address?: string;
+  invitation_slug?: string;
+  payment_status?: string;
   extras?: Array<{
     id: number;
     extra_type: string;
     extra_id: number;
     price: string | number;
   }>;
+}
+
+export interface Invitation {
+  id: number;
+  venue_id: number;
+  bride_name: string;
+  groom_name: string;
+  hall_name: string;
+  hall_address: string;
+  event_date: string;
+  wedding_time: string;
+  invitation_slug: string;
+  payment_status: 'pending' | 'paid' | 'failed';
+  status: 'confirmed' | 'upcoming' | 'completed' | 'cancelled';
+  total_price: string | number;
+  advance_paid: string | number;
+  guest_count: number;
+  district_id: number;
+  district_name: string;
 }
 
 export interface AdminStats {

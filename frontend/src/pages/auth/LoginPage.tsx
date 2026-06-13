@@ -84,6 +84,7 @@ export function LoginPage() {
           Owner ro&apos;yxati
         </Link>
       </p>
+      <button>KKKKKKKKKKKKKKKKKK</button>
     </div>
   );
 }

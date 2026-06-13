@@ -21,6 +21,9 @@ export function CreateBookingPage() {
   const [cars, setCars] = useState<Car[]>([]);
   const [loading, setLoading] = useState(true);
   const [eventDate, setEventDate] = useState('');
+  const [weddingTime, setWeddingTime] = useState('18:00');
+  const [brideName, setBrideName] = useState('');
+  const [groomName, setGroomName] = useState('');
   const [tableCount, setTableCount] = useState('');
   const [selectedSinger, setSelectedSinger] = useState('');
   const [selectedCar, setSelectedCar] = useState('');
@@ -87,7 +90,7 @@ export function CreateBookingPage() {
 
   const handleContinue = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!venueId || !eventDate || !tableCount) {
+    if (!venueId || !eventDate || !weddingTime || !brideName || !groomName || !tableCount) {
       toast.error("Barcha majburiy maydonlarni to'ldiring");
       return;
     }
@@ -102,13 +105,20 @@ export function CreateBookingPage() {
     const { data } = await bookingService.create({
       venueId: Number(venueId),
       eventDate,
+      weddingTime,
+      brideName,
+      groomName,
       guestCount: Number(tableCount),
       extras: buildExtrasPayload(),
     });
 
     setShowPayment(false);
     toast.success(data.message || 'Booking completed successfully');
-    navigate(`/bookings/${data.booking.id}`);
+    if (data.invitationSlug) {
+      navigate(`/invitation/${data.invitationSlug}`);
+    } else {
+      navigate(`/bookings/${data.booking.id}`);
+    }
   };
 
   if (loading) return <Spinner />;
@@ -141,6 +151,29 @@ export function CreateBookingPage() {
             min={new Date().toISOString().slice(0, 10)}
             value={eventDate}
             onChange={(e) => setEventDate(e.target.value)}
+            required
+          />
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Input
+              label="Kelinning ismi"
+              type="text"
+              value={brideName}
+              onChange={(e) => setBrideName(e.target.value)}
+              required
+            />
+            <Input
+              label="Kuyovning ismi"
+              type="text"
+              value={groomName}
+              onChange={(e) => setGroomName(e.target.value)}
+              required
+            />
+          </div>
+          <Input
+            label="To'y vaqti"
+            type="time"
+            value={weddingTime}
+            onChange={(e) => setWeddingTime(e.target.value)}
             required
           />
           <Input

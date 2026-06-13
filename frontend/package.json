@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "axios": "^1.17.0",
+    "dom-to-image-more": "^3.10.0",
+    "jspdf": "^2.5.1",
     "lucide-react": "^1.17.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
